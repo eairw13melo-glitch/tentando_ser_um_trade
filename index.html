@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Checklist do Trader Consistente | Disciplina & Execução</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>📋 Checklist do Trader Consistente</h1>
+        <p>Prepare a mente, siga o plano, execute com disciplina — dia após dia.</p>
+        <div class="badge-day" id="currentDate"></div>
+    </div>
+
+    <div class="dashboard">
+        <!-- CARD 1: PREPARAÇÃO MENTAL + PRÉ-MERCADO -->
+        <div class="card">
+            <div class="card-header">
+                <h2>🧠 1. Mental & Pré-Abertura</h2>
+            </div>
+            <div class="card-body">
+                <div class="checklist-item">
+                    <input type="checkbox" id="mental_estavel">
+                    <label for="mental_estavel">✅ Estado emocional estável (calmo, concentrado, sem impulsividade)</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="mental_sleep">
+                    <label for="mental_sleep">✅ Dormi bem, alimentado e hidratado — energia mental ok</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="afirmacao">
+                    <label for="afirmacao">🔁 Repeti afirmações: “Sigo meu setup com disciplina” / “Aceito o risco”</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="respira_pre">
+                    <label for="respira_pre">🌬️ Respiração 4-4-6 (inspira 4s / segura 4s / expira 6s) por 2 min</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="macro_global">
+                    <label for="macro_global">🌎 Cenário macro: futuros EUA, DXY, notícias locais e agenda econômica</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="analise_tecnica">
+                    <label for="analise_tecnica">📊 Análise técnica: tendência, SR, médias, gaps, volume (diário/60min/15min)</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="setup_definido">
+                    <label for="setup_definido">🎯 Setup definido: entrada, stop técnico, alvo parcial/final, R:R ≥ 1:2</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="plano_contingencia">
+                    <label for="plano_contingencia">⚠️ Plano de contingência: limite de perda diária e “dia de folga” se necessário</label>
+                </div>
+                <div class="risk-badge">
+                    💡 Frase de ancoragem: “Minha vantagem está na consistência, não na previsão.”
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 2: GESTÃO DE RISCO + LIMITES DIÁRIOS -->
+        <div class="card">
+            <div class="card-header">
+                <h2>🛡️ 2. Gestão de Risco & Limites</h2>
+            </div>
+            <div class="card-body">
+                <div class="checklist-item">
+                    <input type="checkbox" id="risk_por_trade">
+                    <label for="risk_por_trade">📉 Risco por operação: máximo 1-2% do capital total</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="daily_stop_cap">
+                    <label for="daily_stop_cap">⛔ Perda máxima diária definida (ex: 2% do capital ou 2 stops)</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="max_trades_day">
+                    <label for="max_trades_day">🚫 Limite de trades por dia para evitar overtrading (ex: máx 3-4)</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="stop_loss_fixo">
+                    <label for="stop_loss_fixo">🔒 Stop loss obrigatório em toda operação (ordem pendente, nunca mental)</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="alvo_parcial">
+                    <label for="alvo_parcial">🎯 Estratégia de saída: alvo parcial e trailing stop definido</label>
+                </div>
+                <div class="daily-limiter">
+                    <span>📌 Controle de stops hoje:</span>
+                    <span class="stop-counter" id="stopCounterDisplay">0</span>
+                    <button id="addStopBtn" style="background:#e2e8f0;">➕ Registrar Stop</button>
+                    <button id="resetStopsBtn" style="background:#fff0e0;">🔄 Reset Stops</button>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="respeitar_limite_stop">
+                    <label for="respeitar_limite_stop">🛑 Respeitar limite: 2 stops = fim do dia (não operar mais)</label>
+                </div>
+                <div class="subnote">
+                    * Ao atingir 2 stops, o checklist de "Durante Pregão" será bloqueado simbolicamente — levantar da mesa.
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 3: DURANTE O PREGÃO + ANTI-IMPULSO -->
+        <div class="card">
+            <div class="card-header">
+                <h2>⏱️ 3. Durante o Pregão & Anti-Impulso</h2>
+            </div>
+            <div class="card-body" id="duringTradeArea">
+                <div class="checklist-item">
+                    <input type="checkbox" id="esperar_oportunidade">
+                    <label for="esperar_oportunidade">⏳ Esperar a melhor oportunidade — não entrar por impulso</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="seguir_estrategia">
+                    <label for="seguir_estrategia">📐 Seguir a estratégia sem desviar do plano (setup + gestão)</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="aceitar_perdas">
+                    <label for="aceitar_perdas">🧘 Aceitar perdas naturalmente — sem revenge trade</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="leitura_anti_impulso">
+                    <label for="leitura_anti_impulso">📖 Leitura anti-impulso: "Eu aceito o risco. Sigo o plano. Não clico no impulso."</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="respira_antes_clique">
+                    <label for="respira_antes_clique">🌬️ Respiração consciente antes do clique: inspira 5s / segura 3s / solta 5s</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check_emocional_entrada">
+                    <label for="check_emocional_entrada">❓ Check emocional: "Se levar stop, consigo aceitar?" → resposta sim, então entro</label>
+                </div>
+                <div class="risk-badge" style="background:#fef2e0;">
+                    ⚠️ Após um STOP: Levante da mesa, feche gráfico, pausa de 15 minutos. Só volte se estiver emocionalmente limpo.
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 4: PÓS-MERCADO & MELHORIA CONTÍNUA -->
+        <div class="card">
+            <div class="card-header">
+                <h2>📝 4. Pós-Mercado & Melhoria Contínua</h2>
+            </div>
+            <div class="card-body">
+                <div class="checklist-item">
+                    <input type="checkbox" id="registrar_trades">
+                    <label for="registrar_trades">📓 Registrar todas as operações (entrada, saída, emoções, lições)</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="revisar_plano">
+                    <label for="revisar_plano">🔍 Revisar se seguiu o plano: acertos, desvios e disciplina</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="diario_emocional">
+                    <label for="diario_emocional">💭 Diário emocional: o que sentiu no stop? Teve impulso? Como lidou?</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="ritual_encerramento">
+                    <label for="ritual_encerramento">🌙 Ritual de encerramento: “Hoje acabou, amanhã o processo continua.”</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="reflexao_noite">
+                    <label for="reflexao_noite">🧠 Reflexão à noite: "Hoje fui emocional ou estratégico?"</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="ajustar_estrategia">
+                    <label for="ajustar_estrategia">⚙️ Ajustar estratégias com base no desempenho do dia (backtest mental)</label>
+                </div>
+                <hr>
+                <div class="checklist-item">
+                    <input type="checkbox" id="revisao_semanal">
+                    <label for="revisao_semanal">📆 Revisão semanal de consistência: % de execução correta do plano</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 5: DISCIPLINA & REGRAS DE OURO -->
+        <div class="card">
+            <div class="card-header">
+                <h2>🥇 5. Disciplina & Regras de Ouro</h2>
+            </div>
+            <div class="card-body">
+                <div class="checklist-item">
+                    <input type="checkbox" id="nunca_vinganca">
+                    <label for="nunca_vinganca">🚫 NUNCA perseguir prejuízo (revenge trade). Perdeu? Aceite e pare.</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="nunca_averagedown">
+                    <label for="nunca_averagedown">📉 NUNCA fazer average down. Se o trade foi contra, saia rápido.</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="sem_operar_abalado">
+                    <label for="sem_operar_abalado">😌 Não operar quando emocionalmente abalado (estresse, raiva, cansaço)</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="sair_meta_stop">
+                    <label for="sair_meta_stop">🏁 Respeitar limites: sair ao atingir meta diária ou stop diário</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="consistencia_mensal">
+                    <label for="consistencia_mensal">📈 Lembrar: consistência > ganhos rápidos. Processo acima do resultado.</label>
+                </div>
+                <div class="quote">
+                    “Planeje o trade, trade o plano. O mercado recompensa a paciência e a execução fria.”
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="display: flex; justify-content: center; margin: 8px 0 12px;">
+        <button id="fullResetDay" class="btn-fullreset">🔄 Reset Completo do Dia (Novo Ciclo)</button>
+    </div>
+
+    <footer>
+        Checklist integrado com base nos documentos: Pré-abertura, Plano Emocional, Gestão de Risco e Template Trading Plan.<br>
+        Use o registro de stops diários para evitar overtrading. Cada item salva automaticamente no navegador.
+    </footer>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
