@@ -1,4 +1,4 @@
-// ==================== 1. CHECKLIST + STOPS ====================
+// ==================== CHECKLIST + STOPS ====================
 const allCheckboxIds = [
     "mental_estavel","mental_sleep","afirmacao","respira_pre","macro_global",
     "analise_tecnica","setup_definido","plano_contingencia",
@@ -58,7 +58,7 @@ function fullResetChecklists() {
     alert("Checklists e stops resetados.");
 }
 
-// ==================== 2. PATRIMÔNIO ====================
+// ==================== PATRIMÔNIO ====================
 let patrimonio = 10000;
 function loadPatrimonio() {
     const saved = localStorage.getItem('trader_patrimonio');
@@ -71,10 +71,10 @@ function updatePatrimonioDisplay() {
 }
 function editarPatrimonio() {
     let novo = prompt("Novo patrimônio (R$):", patrimonio.toFixed(2));
-    if (novo && !isNaN(parseFloat(novo))) { patrimonio = parseFloat(novo); updatePatrimonioDisplay(); }
+    if (novo && !isNaN(parseFloat(novo))) { patrimonio = parseFloat(novo); updatePatrimonioDisplay(); updatePerformanceChart(); }
 }
 
-// ==================== 3. ATIVOS EDITÁVEIS ====================
+// ==================== ATIVOS EDITÁVEIS ====================
 let ativosList = ["PETR4", "VALE3", "ITUB4", "BBDC4", "BBAS3", "B3SA3", "ABEV3", "WING25", "WINJ25"];
 function loadAtivos() {
     const saved = localStorage.getItem('trader_ativos_list');
@@ -102,14 +102,15 @@ function removeAsset() {
     else alert("Ativo não encontrado.");
 }
 
-// ==================== 4. DIÁRIO DE TRADES ====================
+// ==================== DIÁRIO DE TRADES ====================
 let trades = [];
 function loadTrades() {
     const stored = localStorage.getItem('trader_diary_trades');
     trades = stored ? JSON.parse(stored) : [];
     renderTrades();
+    updatePerformanceChart();
 }
-function saveTrades() { localStorage.setItem('trader_diary_trades', JSON.stringify(trades)); renderTrades(); }
+function saveTrades() { localStorage.setItem('trader_diary_trades', JSON.stringify(trades)); renderTrades(); updatePerformanceChart(); }
 function calculatePnL(entry, exit, type) { if (!entry || !exit) return ""; const diff = exit - entry; return (type === "Compra" ? diff : -diff).toFixed(2); }
 function addTrade(trade) { trade.id = Date.now(); trades.unshift(trade); saveTrades(); }
 function deleteTrade(id) { trades = trades.filter(t => t.id != id); saveTrades(); }
@@ -209,7 +210,155 @@ function initDiary() {
     document.getElementById('tradeType').addEventListener('change', updatePnL);
 }
 
-// ==================== 5. HORÁRIOS (gráfico já estático, apenas inicialização) ====================
+// ==================== GRÁFICO DE PERFORMANCE ====================
+let performanceChart = null;
+function updatePerformanceChart() {
+    const canvas = document.getElementById('performanceChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    // Calcular patrimônio acumulado a partir dos trades (ordenados por data)
+    const sortedTrades = [...trades].sort((a,b) => new Date(a.data) - new Date(b.data));
+    let patrimonios = [];
+    let currentPatrimonio = patrimonio;
+    // Para cada trade (assumindo que resultado é o lucro/prejuízo em reais)
+    for (let i = 0; i < sortedTrades.length; i++) {
+        const t = sortedTrades[i];
+        if (t.resultado && !isNaN(parseFloat(t.resultado))) {
+            currentPatrimonio += parseFloat(t.resultado);
+        }
+        patrimonios.push({ data: t.data, valor: currentPatrimonio });
+    }
+    // Se não houver trades, mostrar linha estável
+    if (patrimonios.length === 0) {
+        patrimonios = [{ data: new Date().toISOString().slice(0,10), valor: patrimonio }];
+    }
+    const labels = patrimonios.map(p => p.data);
+    const values = patrimonios.map(p => p.valor);
+    if (performanceChart) performanceChart.destroy();
+    performanceChart = new Chart(ctx, {
+        type: 'line',
+        data: { labels, datasets: [{ label: 'Patrimônio (R$)', data: values, borderColor: '#1e7e5e', backgroundColor: 'rgba(30,126,94,0.1)', fill: true, tension: 0.2 }] },
+        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top' } } }
+    });
+}
+
+// ==================== CALENDÁRIO ECONÔMICO (estático) ====================
+function loadEconomicCalendar() {
+    // Dados de exemplo (substituir por API futura)
+    const eventos = [
+        { data: "2025-04-17", pais: "EUA", evento: "Pedidos de auxílio-desemprego", impacto: "Alto" },
+        { data: "2025-04-18", pais: "Brasil", evento: "IPCA-15 (prévia da inflação)", impacto: "Alto" },
+        { data: "2025-04-20", pais: "China", evento: "Taxa de juros (LPR)", impacto: "Médio" },
+        { data: "2025-04-22", pais: "Zona do Euro", evento: "PMI Composto (flash)", impacto: "Alto" },
+        { data: "2025-04-23", pais: "EUA", evento: "FOMC - ata da última reunião", impacto: "Alto" },
+        { data: "2025-04-30", pais: "Brasil", evento: "Decisão Copom (Selic)", impacto: "Muito Alto" },
+        { data: "2025-05-02", pais: "EUA", evento: "Payroll (geração de empregos)", impacto: "Muito Alto" }
+    ];
+    const container = document.getElementById('economicCalendar');
+    if (!container) return;
+    container.innerHTML = eventos.map(ev => `
+        <div class="calendar-event">
+            <span class="date">📅 ${ev.data}</span>
+            <strong>${ev.pais}:</strong> ${ev.evento} 
+            <span style="background:#f0b27a; padding:2px 8px; border-radius:20px; font-size:0.7rem;">${ev.impacto}</span>
+        </div>
+    `).join('');
+}
+
+// ==================== IMPORTAR/EXPORTAR TODOS OS DADOS ====================
+function exportAllData() {
+    const data = {
+        version: "1.0",
+        checklists: {},
+        stopCount: dailyStopCount,
+        patrimonio: patrimonio,
+        ativosList: ativosList,
+        trades: trades
+    };
+    for (let id of allCheckboxIds) {
+        data.checklists[id] = localStorage.getItem(`chk_${id}`) === 'true';
+    }
+    const jsonStr = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `trader_backup_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+}
+function importAllData(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            // Restaurar checklists
+            if (data.checklists) {
+                Object.entries(data.checklists).forEach(([id, value]) => {
+                    localStorage.setItem(`chk_${id}`, value);
+                    const cb = document.getElementById(id);
+                    if (cb) cb.checked = value;
+                });
+            }
+            if (data.stopCount !== undefined) localStorage.setItem('daily_stop_counter', data.stopCount);
+            if (data.patrimonio !== undefined) localStorage.setItem('trader_patrimonio', data.patrimonio);
+            if (data.ativosList) localStorage.setItem('trader_ativos_list', JSON.stringify(data.ativosList));
+            if (data.trades) localStorage.setItem('trader_diary_trades', JSON.stringify(data.trades));
+            alert("Backup importado com sucesso! Recarregando a página...");
+            location.reload();
+        } catch (err) {
+            alert("Erro ao ler o arquivo de backup. Verifique o formato.");
+        }
+    };
+    reader.readAsText(file);
+}
+
+// ==================== MONITOR DE AÇÕES ====================
+const stocks = [
+    { symbol: "VALE3.SA", name: "VALE3" }, { symbol: "PETR4.SA", name: "PETR4" },
+    { symbol: "ITUB4.SA", name: "ITUB4" }, { symbol: "BBDC4.SA", name: "BBDC4" },
+    { symbol: "BBAS3.SA", name: "BBAS3" }, { symbol: "B3SA3.SA", name: "B3SA3" },
+    { symbol: "ABEV3.SA", name: "ABEV3" }
+];
+async function fetchStockQuote(symbol) {
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`;
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        const result = data.chart.result[0];
+        if (!result) throw new Error();
+        const meta = result.meta;
+        const regularMarketPrice = meta.regularMarketPrice;
+        const previousClose = meta.chartPreviousClose;
+        const change = regularMarketPrice - previousClose;
+        const changePercent = (change / previousClose) * 100;
+        return { price: regularMarketPrice, change, changePercent };
+    } catch (error) { return null; }
+}
+async function updateStocks() {
+    const grid = document.getElementById('stocksGrid');
+    if (!grid) return;
+    grid.innerHTML = '<div class="loading">Carregando cotações...</div>';
+    const results = await Promise.all(stocks.map(async (stock) => {
+        const quote = await fetchStockQuote(stock.symbol);
+        return { ...stock, quote };
+    }));
+    grid.innerHTML = '';
+    results.forEach(stock => {
+        const card = document.createElement('div'); card.className = 'stock-card';
+        const changeClass = stock.quote && stock.quote.change >= 0 ? 'positive' : 'negative';
+        const changeSign = stock.quote && stock.quote.change >= 0 ? '+' : '';
+        card.innerHTML = `
+            <div class="stock-symbol">${stock.name}</div>
+            <div class="stock-price">${stock.quote ? `R$ ${stock.quote.price.toFixed(2)}` : '--'}</div>
+            <div class="stock-change ${changeClass}">${stock.quote ? `${changeSign}${stock.quote.change.toFixed(2)} (${changeSign}${stock.quote.changePercent.toFixed(2)}%)` : '--'}</div>
+        `;
+        grid.appendChild(card);
+    });
+}
+let stockInterval;
+function startStockUpdater() { updateStocks(); if (stockInterval) clearInterval(stockInterval); stockInterval = setInterval(updateStocks, 60000); }
+
+// ==================== ACCORDION ====================
 function initAccordion() {
     const headers = document.querySelectorAll('.accordion-header');
     headers.forEach(header => {
@@ -229,73 +378,13 @@ function initAccordion() {
     });
 }
 
-// ==================== 6. MONITOR DE AÇÕES (Yahoo Finance) ====================
-const stocks = [
-    { symbol: "VALE3.SA", name: "VALE3" },
-    { symbol: "PETR4.SA", name: "PETR4" },
-    { symbol: "ITUB4.SA", name: "ITUB4" },
-    { symbol: "BBDC4.SA", name: "BBDC4" },
-    { symbol: "BBAS3.SA", name: "BBAS3" },
-    { symbol: "B3SA3.SA", name: "B3SA3" },
-    { symbol: "ABEV3.SA", name: "ABEV3" }
-];
-async function fetchStockQuote(symbol) {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`;
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-        const result = data.chart.result[0];
-        if (!result) throw new Error();
-        const meta = result.meta;
-        const regularMarketPrice = meta.regularMarketPrice;
-        const previousClose = meta.chartPreviousClose;
-        const change = regularMarketPrice - previousClose;
-        const changePercent = (change / previousClose) * 100;
-        return { price: regularMarketPrice, change, changePercent };
-    } catch (error) {
-        console.error(`Erro ao buscar ${symbol}`, error);
-        return null;
-    }
-}
-async function updateStocks() {
-    const grid = document.getElementById('stocksGrid');
-    if (!grid) return;
-    grid.innerHTML = '<div class="loading">Carregando cotações...</div>';
-    const results = await Promise.all(stocks.map(async (stock) => {
-        const quote = await fetchStockQuote(stock.symbol);
-        return { ...stock, quote };
-    }));
-    grid.innerHTML = '';
-    results.forEach(stock => {
-        const card = document.createElement('div');
-        card.className = 'stock-card';
-        const changeClass = stock.quote && stock.quote.change >= 0 ? 'positive' : 'negative';
-        const changeSign = stock.quote && stock.quote.change >= 0 ? '+' : '';
-        card.innerHTML = `
-            <div class="stock-symbol">${stock.name}</div>
-            <div class="stock-price">${stock.quote ? `R$ ${stock.quote.price.toFixed(2)}` : '--'}</div>
-            <div class="stock-change ${changeClass}">${stock.quote ? `${changeSign}${stock.quote.change.toFixed(2)} (${changeSign}${stock.quote.changePercent.toFixed(2)}%)` : '--'}</div>
-        `;
-        grid.appendChild(card);
-    });
-}
-let stockInterval;
-function startStockUpdater() {
-    updateStocks();
-    if (stockInterval) clearInterval(stockInterval);
-    stockInterval = setInterval(updateStocks, 60000); // a cada 60 segundos
-}
-function refreshStocksNow() {
-    updateStocks();
-}
-
-// ==================== 7. DATA ATUAL ====================
+// ==================== DATA ATUAL ====================
 function displayCurrentDate() {
     const span = document.getElementById('currentDate');
     if(span) span.innerText = new Date().toLocaleDateString('pt-BR', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
 }
 
-// ==================== 8. INICIALIZAÇÃO ====================
+// ==================== INICIALIZAÇÃO ====================
 function init() {
     loadCheckboxes();
     loadStopCount();
@@ -305,12 +394,17 @@ function init() {
     displayCurrentDate();
     initAccordion();
     startStockUpdater();
+    loadEconomicCalendar();
     document.getElementById('editarPatrimonioBtn')?.addEventListener('click', editarPatrimonio);
     document.getElementById('addStopBtn')?.addEventListener('click', addStop);
     document.getElementById('resetStopsBtn')?.addEventListener('click', resetStops);
     document.getElementById('fullResetDay')?.addEventListener('click', fullResetChecklists);
     document.getElementById('addAssetBtn')?.addEventListener('click', addAsset);
     document.getElementById('removeAssetBtn')?.addEventListener('click', removeAsset);
-    document.getElementById('refreshStocksBtn')?.addEventListener('click', refreshStocksNow);
+    document.getElementById('refreshStocksBtn')?.addEventListener('click', updateStocks);
+    document.getElementById('exportAllBtn')?.addEventListener('click', exportAllData);
+    const importInput = document.getElementById('importFileInput');
+    document.querySelector('.backup-card label')?.addEventListener('click', () => importInput.click());
+    importInput?.addEventListener('change', (e) => { if(e.target.files[0]) importAllData(e.target.files[0]); });
 }
 init();
