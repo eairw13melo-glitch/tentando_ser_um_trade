@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Checklist do Trader Consistente | Disciplina & Execução</title>
+    <title>Diário do Trader Consistente | Checklist + Registro de Trades</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="container">
     <div class="header">
-        <h1>📋 Checklist do Trader Consistente</h1>
-        <p>Prepare a mente, siga o plano, execute com disciplina — dia após dia.</p>
+        <h1>📋📓 Diário do Trader Consistente</h1>
+        <p>Checklist diário + registro completo de trades — disciplina e evolução na ponta do lápis</p>
         <div class="badge-day" id="currentDate"></div>
     </div>
 
+    <!-- Grid principal: checklists + diário -->
     <div class="dashboard">
         <!-- CARD 1: PREPARAÇÃO MENTAL + PRÉ-MERCADO -->
         <div class="card">
@@ -88,8 +89,8 @@
                 <div class="daily-limiter">
                     <span>📌 Controle de stops hoje:</span>
                     <span class="stop-counter" id="stopCounterDisplay">0</span>
-                    <button id="addStopBtn" style="background:#e2e8f0;">➕ Registrar Stop</button>
-                    <button id="resetStopsBtn" style="background:#fff0e0;">🔄 Reset Stops</button>
+                    <button id="addStopBtn">➕ Registrar Stop</button>
+                    <button id="resetStopsBtn">🔄 Reset Stops</button>
                 </div>
                 <div class="checklist-item">
                     <input type="checkbox" id="respeitar_limite_stop">
@@ -208,13 +209,103 @@
         </div>
     </div>
 
-    <div style="display: flex; justify-content: center; margin: 8px 0 12px;">
-        <button id="fullResetDay" class="btn-fullreset">🔄 Reset Completo do Dia (Novo Ciclo)</button>
+    <!-- SEÇÃO: DIÁRIO DE TRADES (Formulário + Lista) -->
+    <div class="diary-section">
+        <div class="diary-header">
+            <h2>📔 Diário de Trades</h2>
+            <p>Registre cada operação com todos os detalhes. Os dados ficam salvos no navegador.</p>
+        </div>
+
+        <div class="diary-form card">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Data do Trade</label>
+                        <input type="date" id="tradeDate" value="">
+                    </div>
+                    <div class="form-group">
+                        <label>Ativo / Instrumento</label>
+                        <input type="text" id="asset" placeholder="Ex: PETR4, WINJ25, EUR/USD">
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo</label>
+                        <select id="tradeType">
+                            <option value="Compra">Compra (Long)</option>
+                            <option value="Venda">Venda (Short)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Preço Entrada</label>
+                        <input type="number" step="any" id="entryPrice" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>Preço Saída</label>
+                        <input type="number" step="any" id="exitPrice" placeholder="0.00 (se já fechado)">
+                    </div>
+                    <div class="form-group">
+                        <label>Stop Loss</label>
+                        <input type="number" step="any" id="stopLoss" placeholder="Stop técnico">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Take Profit / Alvo</label>
+                        <input type="number" step="any" id="takeProfit" placeholder="Alvo final">
+                    </div>
+                    <div class="form-group">
+                        <label>Risco (%) do capital</label>
+                        <input type="number" step="0.1" id="riskPercent" placeholder="Ex: 1.5">
+                    </div>
+                    <div class="form-group">
+                        <label>Resultado (R$ / pontos)</label>
+                        <input type="text" id="pnl" readonly placeholder="Automático após saída">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Estratégia utilizada</label>
+                        <input type="text" id="strategy" placeholder="Ex: Pullback, Rompimento, Reversão">
+                    </div>
+                    <div class="form-group">
+                        <label>Gestão de Risco (regra seguida)</label>
+                        <select id="riskRule">
+                            <option value="Sim">Sim, segui o plano</option>
+                            <option value="Nao">Não, desviei</option>
+                            <option value="Parcial">Parcialmente</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group full-width">
+                    <label>Observações / Emoções</label>
+                    <textarea id="notes" rows="2" placeholder="Como estava se sentindo? O que aprendeu?"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button id="addTradeBtn">➕ Adicionar Trade</button>
+                    <button id="clearFormBtn" type="button">Limpar Formulário</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="trade-list card">
+            <div class="card-header">
+                <h2>📋 Histórico de Trades</h2>
+                <button id="exportTradesBtn" style="background:#1f5e7a; color:white;">📎 Exportar CSV</button>
+            </div>
+            <div class="card-body" id="tradesContainer">
+                <div class="empty-message">Nenhum trade registrado ainda. Adicione seus trades acima.</div>
+            </div>
+        </div>
+    </div>
+
+    <div style="display: flex; justify-content: center; margin: 20px 0;">
+        <button id="fullResetDay" class="btn-fullreset">🔄 Reset Completo do Dia (Checklists + Zera Stops)</button>
     </div>
 
     <footer>
-        Checklist integrado com base nos documentos: Pré-abertura, Plano Emocional, Gestão de Risco e Template Trading Plan.<br>
-        Use o registro de stops diários para evitar overtrading. Cada item salva automaticamente no navegador.
+        Checklist + Diário de Trades — Ferramenta completa para o trader consistente.<br>
+        Todos os dados ficam salvos no seu navegador. O botão "Reset Completo" limpa apenas os checklists e stops, não os trades.
     </footer>
 </div>
 
