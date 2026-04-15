@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Diário do Trader Consistente | Mercados + Ações do Mini Índice</title>
+    <title>Diário do Trader Consistente | Checklist + Trades + Performance</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
 <div class="container">
     <div class="header">
         <h1>📋📓 Diário do Trader Consistente</h1>
-        <p>Checklist dinâmico + trades + patrimônio + horários mundiais + monitor de ações</p>
+        <p>Checklist dinâmico + trades + patrimônio + horários + ações + calendário + gráficos</p>
         <div class="badge-day" id="currentDate"></div>
     </div>
 
@@ -27,12 +29,17 @@
             <button id="addStopBtn" class="small-btn">+ Stop</button>
             <button id="resetStopsBtn" class="small-btn">Reset</button>
         </div>
+        <div class="backup-card">
+            <button id="exportAllBtn" class="small-btn" style="background:#1f5e7a; color:white;">📤 Exportar Backup</button>
+            <label for="importFileInput" class="small-btn" style="background:#2c7a4d; color:white; cursor:pointer;">📥 Importar Backup</label>
+            <input type="file" id="importFileInput" accept=".json" style="display:none;">
+        </div>
     </div>
 
-    <!-- Linha 1: Checklists (accordion) + Notícias -->
+    <!-- Dashboard: Checklists + Notícias -->
     <div class="dashboard">
         <div class="checklists-accordion">
-            <!-- Accordion items (compactado, igual ao anterior) -->
+            <!-- Accordion items (5 seções, igual ao anterior) -->
             <div class="accordion-item">
                 <div class="accordion-header" data-target="checklist1">
                     <h2>🧠 1. Mental & Pré-Abertura</h2>
@@ -118,69 +125,32 @@
         </div>
     </div>
 
-    <!-- GRÁFICO DE HORÁRIOS DOS MERCADOS (CORRIGIDO E HARMONIOSO) -->
+    <!-- Gráfico de Horários dos Mercados -->
     <div class="markets-section">
         <div class="card">
             <div class="card-header"><h2>🌍 Horário de Abertura dos Mercados Mundiais (GMT-3)</h2></div>
             <div class="card-body">
                 <div class="market-timeline">
-                    <!-- Eixo do tempo com marcações a cada 2h para não poluir -->
                     <div class="timeline-axis">
                         <span>00h</span><span>02h</span><span>04h</span><span>06h</span><span>08h</span><span>10h</span><span>12h</span><span>14h</span><span>16h</span><span>18h</span><span>20h</span><span>22h</span><span>24h</span>
                     </div>
-                    <!-- Nova York: 10:30 - 17:00 -->
-                    <div class="market-row">
-                        <span class="market-name">🇺🇸 Nova York</span>
-                        <div class="bar-container">
-                            <div class="bar" style="left: 43.75%; width: 27.08%;"></div>
-                        </div>
-                        <span class="market-hours">10:30 - 17:00</span>
-                    </div>
-                    <!-- Londres: 05:00 - 12:30 -->
-                    <div class="market-row">
-                        <span class="market-name">🇬🇧 Londres</span>
-                        <div class="bar-container">
-                            <div class="bar" style="left: 20.83%; width: 31.25%;"></div>
-                        </div>
-                        <span class="market-hours">05:00 - 12:30</span>
-                    </div>
-                    <!-- Tóquio: 21:00 - 06:00 (mostramos apenas até 24h, com nota) -->
-                    <div class="market-row">
-                        <span class="market-name">🇯🇵 Tóquio</span>
-                        <div class="bar-container">
-                            <div class="bar" style="left: 87.5%; width: 12.5%; background: #2c7a4d;"></div>
-                        </div>
-                        <span class="market-hours">21:00 - 06:00*</span>
-                    </div>
-                    <!-- B3: 10:00 - 17:55 -->
-                    <div class="market-row">
-                        <span class="market-name">🇧🇷 B3</span>
-                        <div class="bar-container">
-                            <div class="bar" style="left: 41.67%; width: 33.33%;"></div>
-                        </div>
-                        <span class="market-hours">10:00 - 17:55</span>
-                    </div>
-                    <!-- Xetra: 04:00 - 12:30 -->
-                    <div class="market-row">
-                        <span class="market-name">🇩🇪 Xetra</span>
-                        <div class="bar-container">
-                            <div class="bar" style="left: 16.67%; width: 35.42%;"></div>
-                        </div>
-                        <span class="market-hours">04:00 - 12:30</span>
-                    </div>
+                    <div class="market-row"><span class="market-name">🇺🇸 Nova York</span><div class="bar-container"><div class="bar" style="left: 43.75%; width: 27.08%;"></div></div><span class="market-hours">10:30 - 17:00</span></div>
+                    <div class="market-row"><span class="market-name">🇬🇧 Londres</span><div class="bar-container"><div class="bar" style="left: 20.83%; width: 31.25%;"></div></div><span class="market-hours">05:00 - 12:30</span></div>
+                    <div class="market-row"><span class="market-name">🇯🇵 Tóquio</span><div class="bar-container"><div class="bar" style="left: 87.5%; width: 12.5%;"></div></div><span class="market-hours">21:00 - 06:00*</span></div>
+                    <div class="market-row"><span class="market-name">🇧🇷 B3</span><div class="bar-container"><div class="bar" style="left: 41.67%; width: 33.33%;"></div></div><span class="market-hours">10:00 - 17:55</span></div>
+                    <div class="market-row"><span class="market-name">🇩🇪 Xetra</span><div class="bar-container"><div class="bar" style="left: 16.67%; width: 35.42%;"></div></div><span class="market-hours">04:00 - 12:30</span></div>
                 </div>
                 <div class="overlap-info">
                     <strong>🔄 Sobreposições (maior liquidez):</strong><br>
-                    • NY + Londres: 10:30 - 12:30 (GMT-3)<br>
+                    • NY + Londres: 10:30 - 12:30<br>
                     • NY + B3: 10:30 - 17:00<br>
                     • Londres + B3: 10:00 - 12:30
                 </div>
-                <div class="time-note">*Tóquio: abre às 21h e fecha às 6h do dia seguinte. A barra representa o período até meia-noite.</div>
             </div>
         </div>
     </div>
 
-    <!-- MONITOR DE AÇÕES DO MINI ÍNDICE -->
+    <!-- Monitor de Ações do Mini Índice -->
     <div class="stocks-section">
         <div class="card">
             <div class="card-header">
@@ -188,15 +158,37 @@
                 <button id="refreshStocksBtn" class="small-btn" style="background:#1f5e7a; color:white;">🔄 Atualizar Agora</button>
             </div>
             <div class="card-body">
-                <div class="stocks-grid" id="stocksGrid">
-                    <div class="loading">Carregando cotações...</div>
-                </div>
-                <div class="update-info">Atualização automática a cada 60 segundos | Dados: Yahoo Finance</div>
+                <div class="stocks-grid" id="stocksGrid"><div class="loading">Carregando cotações...</div></div>
+                <div class="update-info">Atualização automática a cada 60s | Dados: Yahoo Finance</div>
             </div>
         </div>
     </div>
 
-    <!-- DIÁRIO DE TRADES (mantido) -->
+    <!-- Calendário Econômico (estático, mas editável) -->
+    <div class="calendar-section">
+        <div class="card">
+            <div class="card-header"><h2>📅 Calendário Econômico (próximos eventos)</h2></div>
+            <div class="card-body">
+                <div id="economicCalendar" class="calendar-list">
+                    <!-- Preenchido via JS -->
+                </div>
+                <div class="update-info">Eventos baseados em dados estáticos. Para API real, integre Alpha Vantage ou Investing.com.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráfico de Desempenho do Patrimônio -->
+    <div class="performance-section">
+        <div class="card">
+            <div class="card-header"><h2>📈 Evolução do Patrimônio (últimos trades)</h2></div>
+            <div class="card-body">
+                <canvas id="performanceChart" width="100%" height="300" style="max-height: 300px; width: 100%;"></canvas>
+                <div class="update-info">Baseado nos resultados registrados no diário de trades.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Diário de Trades -->
     <div class="diary-section">
         <div class="diary-header">
             <h2>📔 Diário de Trades</h2>
@@ -225,7 +217,7 @@
                 <div class="form-row">
                     <div class="form-group"><label>Take Profit</label><input type="number" step="any" id="takeProfit"></div>
                     <div class="form-group"><label>Risco (%)</label><input type="number" step="0.1" id="riskPercent"></div>
-                    <div class="form-group"><label>Resultado</label><input type="text" id="pnl" readonly></div>
+                    <div class="form-group"><label>Resultado (R$)</label><input type="text" id="pnl" readonly></div>
                 </div>
                 <div class="form-row">
                     <div class="form-group"><label>Estratégia</label><input type="text" id="strategy"></div>
@@ -241,26 +233,10 @@
         </div>
     </div>
 
-    <!-- Sugestões de Melhorias -->
-    <div class="suggestions-card">
-        <div class="card-header"><h2>💡 Sugestões de Melhorias para o Sistema</h2></div>
-        <div class="card-body">
-            <ul>
-                <li>📅 Calendário econômico integrado (dados do Bacen, FOMC, etc.)</li>
-                <li>📈 Gráfico de desempenho diário/semanal do patrimônio e trades</li>
-                <li>🔔 Alertas de preço para as ações monitoradas</li>
-                <li>🧪 Backtest rápido de estratégias com base nos trades registrados</li>
-                <li>📱 Aplicativo PWA para usar no celular offline</li>
-                <li>📊 Análise de sentimento de notícias via API</li>
-                <li>⚡ Sincronização com a nuvem (Google Drive/Firebase)</li>
-            </ul>
-        </div>
-    </div>
-
     <div style="display: flex; justify-content: center; margin: 20px 0;">
         <button id="fullResetDay" class="btn-fullreset">🔄 Reset Checklists e Stops (mantém trades e patrimônio)</button>
     </div>
-    <footer>Todos os dados ficam salvos no navegador. Horários baseados em GMT-3 (horário de Brasília).</footer>
+    <footer>Todos os dados ficam salvos no navegador. Use os botões de backup para exportar/importar tudo.</footer>
 </div>
 <script src="script.js"></script>
 </body>
