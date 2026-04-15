@@ -71,6 +71,10 @@ body {
     background: #ffffff;
     padding: 18px 22px 10px 22px;
     border-bottom: 2px solid #eef2f6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
 .card-header h2 {
@@ -201,6 +205,121 @@ hr {
     border-top: 1px solid #e2edf2;
 }
 
+/* ========== ESTILOS DO DIÁRIO DE TRADES ========== */
+.diary-section {
+    margin-top: 20px;
+}
+
+.diary-header {
+    margin-bottom: 20px;
+}
+
+.diary-header h2 {
+    font-size: 1.7rem;
+    color: #0f3b4f;
+}
+
+.diary-form {
+    margin-bottom: 32px;
+}
+
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.form-group {
+    flex: 1;
+    min-width: 150px;
+}
+
+.form-group.full-width {
+    flex: 1 1 100%;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+    color: #2c5a74;
+}
+
+.form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 16px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    transition: 0.2s;
+}
+
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline: none;
+    border-color: #1a5f7a;
+    box-shadow: 0 0 0 2px rgba(26,95,122,0.2);
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+.trade-list {
+    margin-top: 20px;
+}
+
+.trade-item {
+    border-bottom: 1px solid #e2e8f0;
+    padding: 16px 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.trade-info {
+    flex: 3;
+}
+
+.trade-info strong {
+    color: #0f3b4f;
+}
+
+.trade-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.trade-actions button {
+    background: transparent;
+    padding: 6px 12px;
+    border-radius: 30px;
+}
+
+.btn-edit {
+    color: #2c7a4d;
+    border: 1px solid #2c7a4d;
+}
+
+.btn-delete {
+    color: #b13e3e;
+    border: 1px solid #b13e3e;
+}
+
+.empty-message {
+    text-align: center;
+    color: #7c8b97;
+    padding: 30px;
+    font-style: italic;
+}
+
 @media (max-width: 780px) {
     body {
         padding: 16px;
@@ -210,5 +329,9 @@ hr {
     }
     .card-header h2 {
         font-size: 1.25rem;
+    }
+    .form-row {
+        flex-direction: column;
+        gap: 12px;
     }
 }
