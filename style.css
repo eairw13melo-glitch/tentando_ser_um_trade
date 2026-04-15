@@ -151,63 +151,74 @@ body {
     color: #1a5f7a;
     font-weight: 500;
 }
-/* Timeline dos mercados */
+/* ========== GRÁFICO DE HORÁRIOS HARMONIOSO ========== */
 .market-timeline {
     margin: 20px 0;
+    overflow-x: auto;
 }
 .timeline-axis {
     display: flex;
     justify-content: space-between;
     font-size: 0.7rem;
-    color: #6c7a89;
+    color: #4a5b6e;
     margin-bottom: 20px;
-    flex-wrap: wrap;
+    padding: 0 4px;
 }
 .timeline-axis span {
-    width: 4%;
+    flex: 1;
     text-align: center;
+    font-weight: 500;
 }
 .market-row {
     display: flex;
     align-items: center;
-    margin-bottom: 16px;
-    gap: 12px;
+    margin-bottom: 20px;
+    gap: 16px;
 }
 .market-name {
     width: 100px;
     font-weight: 600;
+    font-size: 0.9rem;
 }
 .bar-container {
     flex: 1;
-    height: 28px;
-    background: #e2e8f0;
-    border-radius: 14px;
+    height: 32px;
+    background: #e9edf2;
+    border-radius: 20px;
     position: relative;
+    overflow: visible;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
 }
 .bar {
     position: absolute;
     top: 0;
     bottom: 0;
-    background: #2c7a4d;
-    border-radius: 14px;
-    opacity: 0.8;
+    background: linear-gradient(90deg, #2c9c6e, #1e7e5e);
+    border-radius: 20px;
+    opacity: 0.85;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 .market-hours {
-    width: 90px;
+    width: 100px;
     font-size: 0.8rem;
     color: #2c5a74;
+    font-family: monospace;
+    font-weight: 500;
 }
 .overlap-info {
     background: #eef2fa;
-    padding: 12px;
-    border-radius: 16px;
-    margin: 16px 0;
+    padding: 14px 18px;
+    border-radius: 24px;
+    margin: 20px 0 12px;
     font-size: 0.9rem;
+    line-height: 1.5;
 }
 .time-note {
     font-size: 0.75rem;
-    color: #7c8b97;
+    color: #6c7e8f;
     text-align: center;
+    margin-top: 12px;
+    font-style: italic;
 }
 /* Monitor de ações */
 .stocks-grid {
@@ -218,9 +229,10 @@ body {
 .stock-card {
     background: #f8fafc;
     border-radius: 20px;
-    padding: 12px;
+    padding: 14px;
     text-align: center;
     border: 1px solid #e2e8f0;
+    transition: transform 0.1s;
 }
 .stock-symbol {
     font-weight: bold;
@@ -232,9 +244,9 @@ body {
     margin: 8px 0;
 }
 .stock-change {
-    font-size: 0.9rem;
-    padding: 4px 8px;
-    border-radius: 20px;
+    font-size: 0.85rem;
+    padding: 4px 10px;
+    border-radius: 30px;
     display: inline-block;
 }
 .positive { color: #1e7e5e; background: #e0f2e9; }
@@ -243,9 +255,9 @@ body {
     font-size: 0.7rem;
     text-align: center;
     margin-top: 16px;
-    color: #6c7a89;
+    color: #6c7e8f;
 }
-/* Diário de trades (mantido) */
+/* Diário de trades */
 .diary-form, .trade-list {
     margin-bottom: 24px;
 }
@@ -274,6 +286,7 @@ body {
     padding: 10px 12px;
     border: 1px solid #cbd5e1;
     border-radius: 16px;
+    font-family: inherit;
 }
 .form-actions {
     display: flex;
@@ -286,15 +299,17 @@ body {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+    align-items: center;
 }
 .btn-edit, .btn-delete {
     background: transparent;
     padding: 6px 12px;
     border-radius: 30px;
     margin-left: 8px;
+    border: 1px solid;
 }
-.btn-edit { color: #2c7a4d; border: 1px solid #2c7a4d; }
-.btn-delete { color: #b13e3e; border: 1px solid #b13e3e; }
+.btn-edit { color: #2c7a4d; border-color: #2c7a4d; }
+.btn-delete { color: #b13e3e; border-color: #b13e3e; }
 .btn-fullreset {
     background: #1f5e7a;
     color: white;
