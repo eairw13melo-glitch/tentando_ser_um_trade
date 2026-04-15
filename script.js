@@ -1,17 +1,16 @@
 // ==================== 1. CHECKLIST + STOPS ====================
 const allCheckboxIds = [
-    "mental_estavel", "mental_sleep", "afirmacao", "respira_pre", "macro_global",
-    "analise_tecnica", "setup_definido", "plano_contingencia",
-    "risk_por_trade", "daily_stop_cap", "max_trades_day", "stop_loss_fixo",
-    "alvo_parcial", "respeitar_limite_stop",
-    "esperar_oportunidade", "seguir_estrategia", "aceitar_perdas",
-    "leitura_anti_impulso", "respira_antes_clique", "check_emocional_entrada",
-    "registrar_trades", "revisar_plano", "diario_emocional", "ritual_encerramento",
-    "reflexao_noite", "ajustar_estrategia",
-    "nunca_vinganca", "nunca_averagedown", "sem_operar_abalado", "sair_meta_stop",
+    "mental_estavel","mental_sleep","afirmacao","respira_pre","macro_global",
+    "analise_tecnica","setup_definido","plano_contingencia",
+    "risk_por_trade","daily_stop_cap","max_trades_day","stop_loss_fixo",
+    "alvo_parcial","respeitar_limite_stop",
+    "esperar_oportunidade","seguir_estrategia","aceitar_perdas",
+    "leitura_anti_impulso","respira_antes_clique","check_emocional_entrada",
+    "registrar_trades","revisar_plano","diario_emocional","ritual_encerramento",
+    "reflexao_noite","ajustar_estrategia",
+    "nunca_vinganca","nunca_averagedown","sem_operar_abalado","sair_meta_stop",
     "consistencia_mensal"
 ];
-
 function loadCheckboxes() {
     for (let id of allCheckboxIds) {
         const cb = document.getElementById(id);
@@ -22,7 +21,6 @@ function loadCheckboxes() {
         }
     }
 }
-
 let dailyStopCount = 0;
 function loadStopCount() {
     const saved = localStorage.getItem('daily_stop_counter');
@@ -40,23 +38,15 @@ function addStop() {
     dailyStopCount++;
     updateStopDisplay();
     enforceStopLimitUI();
-    if (dailyStopCount === 2) alert("🔴 DOIS STOPS: Fim do dia de trading.");
-    else if (dailyStopCount === 1) alert("⚠️ Primeiro stop. Pausa de 15 minutos.");
+    alert(dailyStopCount === 2 ? "🔴 DOIS STOPS: Fim do dia de trading." : "⚠️ Primeiro stop. Pausa de 15 minutos.");
 }
-function resetStops() {
-    dailyStopCount = 0;
-    updateStopDisplay();
-    enforceStopLimitUI();
-}
+function resetStops() { dailyStopCount = 0; updateStopDisplay(); enforceStopLimitUI(); }
 function enforceStopLimitUI() {
     const during = ["esperar_oportunidade","seguir_estrategia","aceitar_perdas","leitura_anti_impulso","respira_antes_clique","check_emocional_entrada"];
     const hit = dailyStopCount >= 2;
     during.forEach(id => {
         const cb = document.getElementById(id);
-        if (cb) {
-            cb.disabled = hit;
-            cb.parentElement.style.opacity = hit ? "0.6" : "1";
-        }
+        if (cb) { cb.disabled = hit; cb.parentElement.style.opacity = hit ? "0.6" : "1"; }
     });
 }
 function fullResetChecklists() {
@@ -64,75 +54,52 @@ function fullResetChecklists() {
         const cb = document.getElementById(id);
         if (cb) { cb.checked = false; localStorage.setItem(`chk_${id}`, 'false'); cb.disabled = false; cb.parentElement.style.opacity = "1"; }
     }
-    dailyStopCount = 0;
-    updateStopDisplay();
-    enforceStopLimitUI();
-    alert("Checklists e stops resetados. Trades e patrimônio mantidos.");
+    dailyStopCount = 0; updateStopDisplay(); enforceStopLimitUI();
+    alert("Checklists e stops resetados.");
 }
 
 // ==================== 2. PATRIMÔNIO ====================
-let patrimonio = 0;
+let patrimonio = 10000;
 function loadPatrimonio() {
     const saved = localStorage.getItem('trader_patrimonio');
-    patrimonio = saved ? parseFloat(saved) : 10000.00; // valor inicial padrão R$10k
+    patrimonio = saved ? parseFloat(saved) : 10000;
     updatePatrimonioDisplay();
 }
 function updatePatrimonioDisplay() {
-    const elem = document.getElementById('patrimonioValor');
-    if (elem) elem.innerText = `R$ ${patrimonio.toFixed(2)}`;
+    document.getElementById('patrimonioValor').innerText = `R$ ${patrimonio.toFixed(2)}`;
     localStorage.setItem('trader_patrimonio', patrimonio);
 }
 function editarPatrimonio() {
-    let novo = prompt("Digite o novo valor do patrimônio (R$):", patrimonio.toFixed(2));
-    if (novo !== null && !isNaN(parseFloat(novo))) {
-        patrimonio = parseFloat(novo);
-        updatePatrimonioDisplay();
-    }
+    let novo = prompt("Novo patrimônio (R$):", patrimonio.toFixed(2));
+    if (novo && !isNaN(parseFloat(novo))) { patrimonio = parseFloat(novo); updatePatrimonioDisplay(); }
 }
 
 // ==================== 3. ATIVOS EDITÁVEIS ====================
-let ativosList = ["PETR4", "VALE3", "WING25", "WINJ25", "EUR/USD", "BTC/USD"];
+let ativosList = ["PETR4", "VALE3", "ITUB4", "BBDC4", "BBAS3", "B3SA3", "ABEV3", "WING25", "WINJ25"];
 function loadAtivos() {
     const saved = localStorage.getItem('trader_ativos_list');
     if (saved) ativosList = JSON.parse(saved);
-    else ativosList = ativosList;
     updateDatalist();
 }
 function updateDatalist() {
     const datalist = document.getElementById('ativosList');
     if (datalist) {
         datalist.innerHTML = '';
-        ativosList.forEach(ativo => {
-            const option = document.createElement('option');
-            option.value = ativo;
-            datalist.appendChild(option);
-        });
+        ativosList.forEach(a => { const opt = document.createElement('option'); opt.value = a; datalist.appendChild(opt); });
+        localStorage.setItem('trader_ativos_list', JSON.stringify(ativosList));
     }
-    localStorage.setItem('trader_ativos_list', JSON.stringify(ativosList));
 }
 function addAsset() {
     const input = document.getElementById('asset');
-    const newAsset = input.value.trim();
-    if (newAsset && !ativosList.includes(newAsset)) {
-        ativosList.push(newAsset);
-        updateDatalist();
-        input.value = newAsset;
-    } else if (newAsset && ativosList.includes(newAsset)) {
-        alert("Ativo já existe na lista.");
-    } else {
-        alert("Digite um nome de ativo válido.");
-    }
+    const novo = input.value.trim();
+    if (novo && !ativosList.includes(novo)) { ativosList.push(novo); updateDatalist(); input.value = novo; }
+    else alert("Ativo já existe ou inválido.");
 }
 function removeAsset() {
     const input = document.getElementById('asset');
-    const assetToRemove = input.value.trim();
-    if (assetToRemove && ativosList.includes(assetToRemove)) {
-        ativosList = ativosList.filter(a => a !== assetToRemove);
-        updateDatalist();
-        input.value = "";
-    } else {
-        alert("Ativo não encontrado na lista para remoção.");
-    }
+    const rem = input.value.trim();
+    if (rem && ativosList.includes(rem)) { ativosList = ativosList.filter(a => a !== rem); updateDatalist(); input.value = ""; }
+    else alert("Ativo não encontrado.");
 }
 
 // ==================== 4. DIÁRIO DE TRADES ====================
@@ -142,25 +109,10 @@ function loadTrades() {
     trades = stored ? JSON.parse(stored) : [];
     renderTrades();
 }
-function saveTrades() {
-    localStorage.setItem('trader_diary_trades', JSON.stringify(trades));
-    renderTrades();
-}
-function calculatePnL(entry, exit, type) {
-    if (!entry || !exit) return "";
-    const diff = exit - entry;
-    const result = type === "Compra" ? diff : -diff;
-    return result.toFixed(2);
-}
-function addTrade(trade) {
-    trade.id = Date.now();
-    trades.unshift(trade);
-    saveTrades();
-}
-function deleteTrade(id) {
-    trades = trades.filter(t => t.id != id);
-    saveTrades();
-}
+function saveTrades() { localStorage.setItem('trader_diary_trades', JSON.stringify(trades)); renderTrades(); }
+function calculatePnL(entry, exit, type) { if (!entry || !exit) return ""; const diff = exit - entry; return (type === "Compra" ? diff : -diff).toFixed(2); }
+function addTrade(trade) { trade.id = Date.now(); trades.unshift(trade); saveTrades(); }
+function deleteTrade(id) { trades = trades.filter(t => t.id != id); saveTrades(); }
 function editTradeById(id) {
     const trade = trades.find(t => t.id == id);
     if (!trade) return;
@@ -168,16 +120,14 @@ function editTradeById(id) {
     document.getElementById('asset').value = trade.ativo;
     document.getElementById('tradeType').value = trade.tipo;
     document.getElementById('entryPrice').value = trade.entrada;
-    document.getElementById('exitPrice').value = trade.saida !== null ? trade.saida : '';
-    document.getElementById('stopLoss').value = trade.stopLoss !== null ? trade.stopLoss : '';
-    document.getElementById('takeProfit').value = trade.takeProfit !== null ? trade.takeProfit : '';
-    document.getElementById('riskPercent').value = trade.riscoPercent !== null ? trade.riscoPercent : '';
+    document.getElementById('exitPrice').value = trade.saida ?? '';
+    document.getElementById('stopLoss').value = trade.stopLoss ?? '';
+    document.getElementById('takeProfit').value = trade.takeProfit ?? '';
+    document.getElementById('riskPercent').value = trade.riscoPercent ?? '';
     document.getElementById('strategy').value = trade.estrategia || '';
     document.getElementById('riskRule').value = trade.riskRule || 'Sim';
     document.getElementById('notes').value = trade.notas || '';
-    if (confirm("Editar este trade? Após alterar, clique em 'Adicionar Trade' para salvar.")) {
-        deleteTrade(id);
-    }
+    if (confirm("Editar? Após alterar, clique em 'Adicionar Trade'.")) deleteTrade(id);
 }
 function getFormTrade() {
     const data = document.getElementById('tradeDate').value;
@@ -245,20 +195,21 @@ function exportToCSV() {
 }
 function initDiary() {
     loadTrades();
-    const today = new Date().toISOString().slice(0,10);
-    if(document.getElementById('tradeDate')) document.getElementById('tradeDate').value = today;
+    document.getElementById('tradeDate').value = new Date().toISOString().slice(0,10);
     document.getElementById('addTradeBtn')?.addEventListener('click', ()=>{ const t=getFormTrade(); if(t){ addTrade(t); clearForm(); } });
     document.getElementById('clearFormBtn')?.addEventListener('click', clearForm);
     document.getElementById('exportTradesBtn')?.addEventListener('click', exportToCSV);
-    // P&L automático
-    const exitInput = document.getElementById('exitPrice'), entryInput = document.getElementById('entryPrice'), typeSelect = document.getElementById('tradeType'), pnlField = document.getElementById('pnl');
-    const updatePnL = () => { const entry=parseFloat(entryInput.value), exit=parseFloat(exitInput.value), type=typeSelect.value; if(!isNaN(entry) && !isNaN(exit)) pnlField.value = calculatePnL(entry, exit, type); else pnlField.value = ''; };
-    entryInput.addEventListener('input', updatePnL);
-    exitInput.addEventListener('input', updatePnL);
-    typeSelect.addEventListener('change', updatePnL);
+    const updatePnL = () => {
+        const entry=parseFloat(document.getElementById('entryPrice').value), exit=parseFloat(document.getElementById('exitPrice').value), type=document.getElementById('tradeType').value;
+        if(!isNaN(entry) && !isNaN(exit)) document.getElementById('pnl').value = calculatePnL(entry, exit, type);
+        else document.getElementById('pnl').value = '';
+    };
+    document.getElementById('entryPrice').addEventListener('input', updatePnL);
+    document.getElementById('exitPrice').addEventListener('input', updatePnL);
+    document.getElementById('tradeType').addEventListener('change', updatePnL);
 }
 
-// ==================== 5. ACCORDION (checklists dinâmicos) ====================
+// ==================== 5. HORÁRIOS (gráfico já estático, apenas inicialização) ====================
 function initAccordion() {
     const headers = document.querySelectorAll('.accordion-header');
     headers.forEach(header => {
@@ -271,22 +222,80 @@ function initAccordion() {
                 if (icon) icon.style.transform = body.classList.contains('active') ? 'rotate(0deg)' : 'rotate(-90deg)';
             }
         });
-        // Inicialmente, todos abertos? Pode deixar o primeiro aberto, mas vamos manter todos abertos por padrão? O CSS active já deixa o primeiro? Vamos deixar todos fechados por padrão exceto o primeiro? Para ficar mais clean, vou deixar todos fechados. Mas o HTML já tem class="active" no primeiro? Sim, no checklist1 está active. Ajustei.
-        const icon = header.querySelector('.accordion-icon');
-        if (icon && header.getAttribute('data-target') !== 'checklist1') icon.style.transform = 'rotate(-90deg)';
+        if (header.getAttribute('data-target') !== 'checklist1') {
+            const icon = header.querySelector('.accordion-icon');
+            if (icon) icon.style.transform = 'rotate(-90deg)';
+        }
     });
 }
 
-// ==================== 6. DATA ATUAL ====================
-function displayCurrentDate() {
-    const span = document.getElementById('currentDate');
-    if(span){
-        const now = new Date();
-        span.innerText = now.toLocaleDateString('pt-BR', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+// ==================== 6. MONITOR DE AÇÕES (Yahoo Finance) ====================
+const stocks = [
+    { symbol: "VALE3.SA", name: "VALE3" },
+    { symbol: "PETR4.SA", name: "PETR4" },
+    { symbol: "ITUB4.SA", name: "ITUB4" },
+    { symbol: "BBDC4.SA", name: "BBDC4" },
+    { symbol: "BBAS3.SA", name: "BBAS3" },
+    { symbol: "B3SA3.SA", name: "B3SA3" },
+    { symbol: "ABEV3.SA", name: "ABEV3" }
+];
+async function fetchStockQuote(symbol) {
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`;
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        const result = data.chart.result[0];
+        if (!result) throw new Error();
+        const meta = result.meta;
+        const regularMarketPrice = meta.regularMarketPrice;
+        const previousClose = meta.chartPreviousClose;
+        const change = regularMarketPrice - previousClose;
+        const changePercent = (change / previousClose) * 100;
+        return { price: regularMarketPrice, change, changePercent };
+    } catch (error) {
+        console.error(`Erro ao buscar ${symbol}`, error);
+        return null;
     }
 }
+async function updateStocks() {
+    const grid = document.getElementById('stocksGrid');
+    if (!grid) return;
+    grid.innerHTML = '<div class="loading">Carregando cotações...</div>';
+    const results = await Promise.all(stocks.map(async (stock) => {
+        const quote = await fetchStockQuote(stock.symbol);
+        return { ...stock, quote };
+    }));
+    grid.innerHTML = '';
+    results.forEach(stock => {
+        const card = document.createElement('div');
+        card.className = 'stock-card';
+        const changeClass = stock.quote && stock.quote.change >= 0 ? 'positive' : 'negative';
+        const changeSign = stock.quote && stock.quote.change >= 0 ? '+' : '';
+        card.innerHTML = `
+            <div class="stock-symbol">${stock.name}</div>
+            <div class="stock-price">${stock.quote ? `R$ ${stock.quote.price.toFixed(2)}` : '--'}</div>
+            <div class="stock-change ${changeClass}">${stock.quote ? `${changeSign}${stock.quote.change.toFixed(2)} (${changeSign}${stock.quote.changePercent.toFixed(2)}%)` : '--'}</div>
+        `;
+        grid.appendChild(card);
+    });
+}
+let stockInterval;
+function startStockUpdater() {
+    updateStocks();
+    if (stockInterval) clearInterval(stockInterval);
+    stockInterval = setInterval(updateStocks, 60000); // a cada 60 segundos
+}
+function refreshStocksNow() {
+    updateStocks();
+}
 
-// ==================== 7. INICIALIZAÇÃO ====================
+// ==================== 7. DATA ATUAL ====================
+function displayCurrentDate() {
+    const span = document.getElementById('currentDate');
+    if(span) span.innerText = new Date().toLocaleDateString('pt-BR', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+}
+
+// ==================== 8. INICIALIZAÇÃO ====================
 function init() {
     loadCheckboxes();
     loadStopCount();
@@ -295,11 +304,13 @@ function init() {
     initDiary();
     displayCurrentDate();
     initAccordion();
+    startStockUpdater();
     document.getElementById('editarPatrimonioBtn')?.addEventListener('click', editarPatrimonio);
     document.getElementById('addStopBtn')?.addEventListener('click', addStop);
     document.getElementById('resetStopsBtn')?.addEventListener('click', resetStops);
     document.getElementById('fullResetDay')?.addEventListener('click', fullResetChecklists);
     document.getElementById('addAssetBtn')?.addEventListener('click', addAsset);
     document.getElementById('removeAssetBtn')?.addEventListener('click', removeAsset);
+    document.getElementById('refreshStocksBtn')?.addEventListener('click', refreshStocksNow);
 }
 init();
