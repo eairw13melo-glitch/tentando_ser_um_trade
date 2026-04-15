@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Diário do Trader Consistente | Checklist + Trades + Patrimônio</title>
+    <title>Diário do Trader Consistente | Mercados + Ações do Mini Índice</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="container">
     <div class="header">
         <h1>📋📓 Diário do Trader Consistente</h1>
-        <p>Checklist dinâmico + registro de trades + controle de patrimônio + notícias</p>
+        <p>Checklist dinâmico + trades + patrimônio + horários mundiais + monitor de ações</p>
         <div class="badge-day" id="currentDate"></div>
     </div>
 
-    <!-- Linha rápida de informações: Patrimônio e Stops -->
+    <!-- Barra superior: Patrimônio e Stops -->
     <div class="info-bar">
         <div class="patrimonio-card">
             <span>💰 Patrimônio Atual</span>
@@ -29,222 +29,205 @@
         </div>
     </div>
 
-    <!-- Grid principal: checklists em accordion + notícias -->
+    <!-- Linha 1: Checklists (accordion) + Notícias -->
     <div class="dashboard">
-        <!-- COLUDA ESQUERDA: CHECKLISTS (ACORDION) -->
         <div class="checklists-accordion">
-            <!-- Card 1 -->
+            <!-- Accordion items (igual ao anterior, mas compactado) -->
             <div class="accordion-item">
                 <div class="accordion-header" data-target="checklist1">
                     <h2>🧠 1. Mental & Pré-Abertura</h2>
                     <span class="accordion-icon">▼</span>
                 </div>
-                <div class="accordion-body active" id="checklist1">
-                    <div class="card-body">
-                        <div class="checklist-item"><input type="checkbox" id="mental_estavel"><label for="mental_estavel">✅ Estado emocional estável (calmo, concentrado)</label></div>
-                        <div class="checklist-item"><input type="checkbox" id="mental_sleep"><label for="mental_sleep">✅ Dormi bem, alimentado e hidratado</label></div>
-                        <div class="checklist-item"><input type="checkbox" id="afirmacao"><label for="afirmacao">🔁 Repeti afirmações: “Sigo meu setup com disciplina”</label></div>
-                        <div class="checklist-item"><input type="checkbox" id="respira_pre"><label for="respira_pre">🌬️ Respiração 4-4-6 por 2 min</label></div>
-                        <div class="checklist-item"><input type="checkbox" id="macro_global"><label for="macro_global">🌎 Cenário macro: futuros EUA, DXY, agenda</label></div>
-                        <div class="checklist-item"><input type="checkbox" id="analise_tecnica"><label for="analise_tecnica">📊 Análise técnica: tendência, SR, volume</label></div>
-                        <div class="checklist-item"><input type="checkbox" id="setup_definido"><label for="setup_definido">🎯 Setup definido: entrada, stop, R:R ≥ 1:2</label></div>
-                        <div class="checklist-item"><input type="checkbox" id="plano_contingencia"><label for="plano_contingencia">⚠️ Plano de contingência: limite de perda diária</label></div>
-                    </div>
-                </div>
+                <div class="accordion-body active" id="checklist1"><div class="card-body">
+                    <div class="checklist-item"><input type="checkbox" id="mental_estavel"><label>✅ Estado emocional estável</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="mental_sleep"><label>✅ Dormi bem, alimentado</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="afirmacao"><label>🔁 Afirmações positivas</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="respira_pre"><label>🌬️ Respiração 4-4-6</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="macro_global"><label>🌎 Cenário macro</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="analise_tecnica"><label>📊 Análise técnica</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="setup_definido"><label>🎯 Setup definido (R:R≥1:2)</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="plano_contingencia"><label>⚠️ Plano de contingência</label></div>
+                </div></div>
             </div>
-            <!-- Card 2 -->
             <div class="accordion-item">
                 <div class="accordion-header" data-target="checklist2">
-                    <h2>🛡️ 2. Gestão de Risco & Limites</h2>
-                    <span class="accordion-icon">▼</span>
+                    <h2>🛡️ 2. Gestão de Risco</h2><span class="accordion-icon">▼</span>
                 </div>
-                <div class="accordion-body" id="checklist2">
-                    <div class="card-body">
-                        <div class="checklist-item"><input type="checkbox" id="risk_por_trade"><label for="risk_por_trade">📉 Risco por operação: máximo 1-2% do capital</label></div>
-                        <div class="checklist-item"><input type="checkbox" id="daily_stop_cap"><label for="daily_stop_cap">⛔ Perda máxima diária definida (ex: 2 stops)</label></div>
-                        <div class="checklist-item"><input type="checkbox" id="max_trades_day"><label for="max_trades_day">🚫 Limite de trades por dia (evitar overtrading)</label></div>
-                        <div class="checklist-item"><input type="checkbox" id="stop_loss_fixo"><label for="stop_loss_fixo">🔒 Stop loss obrigatório em toda operação</label></div>
-                        <div class="checklist-item"><input type="checkbox" id="alvo_parcial"><label for="alvo_parcial">🎯 Estratégia de saída: alvo parcial e trailing stop</label></div>
-                        <div class="checklist-item"><input type="checkbox" id="respeitar_limite_stop"><label for="respeitar_limite_stop">🛑 Respeitar limite: 2 stops = fim do dia</label></div>
-                    </div>
-                </div>
+                <div class="accordion-body" id="checklist2"><div class="card-body">
+                    <div class="checklist-item"><input type="checkbox" id="risk_por_trade"><label>📉 Risco 1-2% por trade</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="daily_stop_cap"><label>⛔ Perda máxima diária</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="max_trades_day"><label>🚫 Limite de trades/dia</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="stop_loss_fixo"><label>🔒 Stop sempre pendente</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="alvo_parcial"><label>🎯 Alvo parcial e trailing</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="respeitar_limite_stop"><label>🛑 2 stops = fim do dia</label></div>
+                </div></div>
             </div>
-            <!-- Card 3 -->
             <div class="accordion-item">
                 <div class="accordion-header" data-target="checklist3">
-                    <h2>⏱️ 3. Durante o Pregão & Anti-Impulso</h2>
-                    <span class="accordion-icon">▼</span>
+                    <h2>⏱️ 3. Durante o Pregão</h2><span class="accordion-icon">▼</span>
                 </div>
-                <div class="accordion-body" id="checklist3">
-                    <div class="card-body">
-                        <div class="checklist-item"><input type="checkbox" id="esperar_oportunidade"><label for="esperar_oportunidade">⏳ Esperar a melhor oportunidade — não entrar por impulso</label></div>
-                        <div class="checklist-item"><input type="checkbox" id="seguir_estrategia"><label for="seguir_estrategia">📐 Seguir a estratégia sem desviar do plano</label></div>
-                        <div class="checklist-item"><input type="checkbox" id="aceitar_perdas"><label for="aceitar_perdas">🧘 Aceitar perdas naturalmente — sem revenge trade</label></div>
-                        <div class="checklist-item"><input type="checkbox" id="leitura_anti_impulso"><label for="leitura_anti_impulso">📖 Leitura anti-impulso: "Aceito o risco. Sigo o plano."</label></div>
-                        <div class="checklist-item"><input type="checkbox" id="respira_antes_clique"><label for="respira_antes_clique">🌬️ Respiração consciente antes do clique (5-3-5)</label></div>
-                        <div class="checklist-item"><input type="checkbox" id="check_emocional_entrada"><label for="check_emocional_entrada">❓ Check emocional: "Se levar stop, consigo aceitar?"</label></div>
-                    </div>
-                </div>
+                <div class="accordion-body" id="checklist3"><div class="card-body">
+                    <div class="checklist-item"><input type="checkbox" id="esperar_oportunidade"><label>⏳ Esperar oportunidade</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="seguir_estrategia"><label>📐 Seguir estratégia</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="aceitar_perdas"><label>🧘 Aceitar perdas</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="leitura_anti_impulso"><label>📖 Leitura anti-impulso</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="respira_antes_clique"><label>🌬️ Respiração pré-clique</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="check_emocional_entrada"><label>❓ Check: aceito o stop?</label></div>
+                </div></div>
             </div>
-            <!-- Card 4 -->
             <div class="accordion-item">
                 <div class="accordion-header" data-target="checklist4">
-                    <h2>📝 4. Pós-Mercado & Melhoria Contínua</h2>
-                    <span class="accordion-icon">▼</span>
+                    <h2>📝 4. Pós-Mercado</h2><span class="accordion-icon">▼</span>
                 </div>
-                <div class="accordion-body" id="checklist4">
-                    <div class="card-body">
-                        <div class="checklist-item"><input type="checkbox" id="registrar_trades"><label for="registrar_trades">📓 Registrar todas as operações no diário</label></div>
-                        <div class="checklist-item"><input type="checkbox" id="revisar_plano"><label for="revisar_plano">🔍 Revisar se seguiu o plano: acertos e desvios</label></div>
-                        <div class="checklist-item"><input type="checkbox" id="diario_emocional"><label for="diario_emocional">💭 Diário emocional: o que sentiu no stop?</label></div>
-                        <div class="checklist-item"><input type="checkbox" id="ritual_encerramento"><label for="ritual_encerramento">🌙 Ritual de encerramento: “Hoje acabou, amanhã continua”</label></div>
-                        <div class="checklist-item"><input type="checkbox" id="reflexao_noite"><label for="reflexao_noite">🧠 Reflexão à noite: "Fui emocional ou estratégico?"</label></div>
-                        <div class="checklist-item"><input type="checkbox" id="ajustar_estrategia"><label for="ajustar_estrategia">⚙️ Ajustar estratégias com base no desempenho</label></div>
-                    </div>
-                </div>
+                <div class="accordion-body" id="checklist4"><div class="card-body">
+                    <div class="checklist-item"><input type="checkbox" id="registrar_trades"><label>📓 Registrar trades</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="revisar_plano"><label>🔍 Revisar execução</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="diario_emocional"><label>💭 Diário emocional</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="ritual_encerramento"><label>🌙 Ritual de encerramento</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="reflexao_noite"><label>🧠 Reflexão noite</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="ajustar_estrategia"><label>⚙️ Ajustar estratégias</label></div>
+                </div></div>
             </div>
-            <!-- Card 5 -->
             <div class="accordion-item">
                 <div class="accordion-header" data-target="checklist5">
-                    <h2>🥇 5. Disciplina & Regras de Ouro</h2>
-                    <span class="accordion-icon">▼</span>
+                    <h2>🥇 5. Regras de Ouro</h2><span class="accordion-icon">▼</span>
                 </div>
-                <div class="accordion-body" id="checklist5">
-                    <div class="card-body">
-                        <div class="checklist-item"><input type="checkbox" id="nunca_vinganca"><label for="nunca_vinganca">🚫 NUNCA perseguir prejuízo (revenge trade)</label></div>
-                        <div class="checklist-item"><input type="checkbox" id="nunca_averagedown"><label for="nunca_averagedown">📉 NUNCA fazer average down</label></div>
-                        <div class="checklist-item"><input type="checkbox" id="sem_operar_abalado"><label for="sem_operar_abalado">😌 Não operar quando emocionalmente abalado</label></div>
-                        <div class="checklist-item"><input type="checkbox" id="sair_meta_stop"><label for="sair_meta_stop">🏁 Respeitar limites: sair ao atingir meta ou stop diário</label></div>
-                        <div class="checklist-item"><input type="checkbox" id="consistencia_mensal"><label for="consistencia_mensal">📈 Consistência > ganhos rápidos</label></div>
-                    </div>
-                </div>
+                <div class="accordion-body" id="checklist5"><div class="card-body">
+                    <div class="checklist-item"><input type="checkbox" id="nunca_vinganca"><label>🚫 Nunca revenge trade</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="nunca_averagedown"><label>📉 Nunca average down</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="sem_operar_abalado"><label>😌 Não operar abalado</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="sair_meta_stop"><label>🏁 Sair na meta/stop</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="consistencia_mensal"><label>📈 Consistência > ganhos</label></div>
+                </div></div>
             </div>
         </div>
 
-        <!-- COLUNA DIREITA: NOTÍCIAS + FORMULÁRIO RÁPIDO DE PATRIMÔNIO (já incluso na barra) -->
+        <!-- Card Notícias (mantido) -->
         <div class="news-card">
-            <div class="card-header">
-                <h2>📰 Notícias Importantes do Dia</h2>
-            </div>
+            <div class="card-header"><h2>📰 Notícias Importantes</h2></div>
             <div class="card-body">
                 <ul class="news-links">
                     <li><a href="https://www.bloomberg.com/brasil" target="_blank">Bloomberg Brasil</a></li>
-                    <li><a href="https://www.reuters.com/finance" target="_blank">Reuters - Finanças</a></li>
+                    <li><a href="https://www.reuters.com/finance" target="_blank">Reuters Finanças</a></li>
                     <li><a href="https://www.infomoney.com.br" target="_blank">InfoMoney</a></li>
                     <li><a href="https://br.advfn.com" target="_blank">ADVFN Brasil</a></li>
                     <li><a href="https://valor.globo.com" target="_blank">Valor Econômico</a></li>
-                    <li><a href="https://br.investing.com" target="_blank">Investing.com Brasil</a></li>
+                    <li><a href="https://br.investing.com" target="_blank">Investing.com</a></li>
                 </ul>
-                <div class="news-note">💡 Clique nos links para abrir as notícias em nova aba.</div>
             </div>
         </div>
     </div>
 
-    <!-- SEÇÃO: DIÁRIO DE TRADES (Formulário + Lista) -->
+    <!-- NOVIDADE: Gráfico de Horários dos Mercados -->
+    <div class="markets-section">
+        <div class="card">
+            <div class="card-header"><h2>🌍 Horário de Abertura dos Mercados Mundiais (GMT-3)</h2></div>
+            <div class="card-body">
+                <div class="market-timeline">
+                    <!-- Eixo do tempo (0h às 23h) -->
+                    <div class="timeline-axis">
+                        <span>0h</span><span>1h</span><span>2h</span><span>3h</span><span>4h</span><span>5h</span><span>6h</span><span>7h</span><span>8h</span><span>9h</span><span>10h</span><span>11h</span><span>12h</span><span>13h</span><span>14h</span><span>15h</span><span>16h</span><span>17h</span><span>18h</span><span>19h</span><span>20h</span><span>21h</span><span>22h</span><span>23h</span>
+                    </div>
+                    <!-- Barras dos mercados -->
+                    <div class="market-row" data-market="NY"><span class="market-name">🇺🇸 Nova York</span><div class="bar-container"><div class="bar" style="left: 43.75%; width: 27.08%;"></div></div><span class="market-hours">10:30 - 17:00</span></div>
+                    <div class="market-row" data-market="LON"><span class="market-name">🇬🇧 Londres</span><div class="bar-container"><div class="bar" style="left: 20.83%; width: 31.25%;"></div></div><span class="market-hours">05:00 - 12:30</span></div>
+                    <div class="market-row" data-market="TKY"><span class="market-name">🇯🇵 Tóquio</span><div class="bar-container"><div class="bar" style="left: 87.5%; width: 37.5%;"></div></div><span class="market-hours">21:00 - 06:00*</span></div>
+                    <div class="market-row" data-market="B3"><span class="market-name">🇧🇷 B3</span><div class="bar-container"><div class="bar" style="left: 41.67%; width: 33.33%;"></div></div><span class="market-hours">10:00 - 17:55</span></div>
+                    <div class="market-row" data-market="XET"><span class="market-name">🇩🇪 Xetra</span><div class="bar-container"><div class="bar" style="left: 16.67%; width: 35.42%;"></div></div><span class="market-hours">04:00 - 12:30</span></div>
+                </div>
+                <div class="overlap-info">
+                    <strong>🔄 Sobreposições (maior liquidez):</strong><br>
+                    • NY + Londres: 10:30 - 12:30 (GMT-3)<br>
+                    • NY + B3: 10:30 - 17:00<br>
+                    • Londres + B3: 10:00 - 12:30
+                </div>
+                <div class="time-note">*Tóquio: abre 21h e fecha 6h do dia seguinte (horário de Brasília).</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOVIDADE: Monitor de Ações do Mini Índice -->
+    <div class="stocks-section">
+        <div class="card">
+            <div class="card-header">
+                <h2>📊 Principais Ações do Mini Índice (Ibovespa)</h2>
+                <button id="refreshStocksBtn" class="small-btn" style="background:#1f5e7a; color:white;">🔄 Atualizar Agora</button>
+            </div>
+            <div class="card-body">
+                <div class="stocks-grid" id="stocksGrid">
+                    <div class="loading">Carregando cotações...</div>
+                </div>
+                <div class="update-info">Atualização automática a cada 60 segundos | Dados: Yahoo Finance</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEÇÃO DIÁRIO DE TRADES (mantida igual) -->
     <div class="diary-section">
         <div class="diary-header">
             <h2>📔 Diário de Trades</h2>
             <p>Registre cada operação. Ativos personalizáveis (adicione/remova abaixo).</p>
         </div>
-
         <div class="diary-form card">
             <div class="card-body">
                 <div class="form-row">
+                    <div class="form-group"><label>Data</label><input type="date" id="tradeDate"></div>
                     <div class="form-group">
-                        <label>Data do Trade</label>
-                        <input type="date" id="tradeDate" value="">
-                    </div>
-                    <div class="form-group">
-                        <label>Ativo / Instrumento</label>
-                        <div style="display: flex; gap: 8px;">
-                            <input list="ativosList" id="asset" placeholder="Selecione ou digite novo" style="flex:1;">
+                        <label>Ativo</label>
+                        <div style="display:flex; gap:8px;">
+                            <input list="ativosList" id="asset" placeholder="Selecione ou digite" style="flex:1;">
                             <datalist id="ativosList"></datalist>
-                            <button type="button" id="addAssetBtn" class="small-btn" style="background:#e2e8f0;">➕</button>
-                            <button type="button" id="removeAssetBtn" class="small-btn" style="background:#ffe6e5;">✖</button>
+                            <button type="button" id="addAssetBtn" class="small-btn">➕</button>
+                            <button type="button" id="removeAssetBtn" class="small-btn">✖</button>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>Tipo</label>
-                        <select id="tradeType">
-                            <option value="Compra">Compra (Long)</option>
-                            <option value="Venda">Venda (Short)</option>
-                        </select>
-                    </div>
+                    <div class="form-group"><label>Tipo</label><select id="tradeType"><option>Compra</option><option>Venda</option></select></div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>Preço Entrada</label>
-                        <input type="number" step="any" id="entryPrice" placeholder="0.00">
-                    </div>
-                    <div class="form-group">
-                        <label>Preço Saída</label>
-                        <input type="number" step="any" id="exitPrice" placeholder="0.00 (se já fechado)">
-                    </div>
-                    <div class="form-group">
-                        <label>Stop Loss</label>
-                        <input type="number" step="any" id="stopLoss" placeholder="Stop técnico">
-                    </div>
+                    <div class="form-group"><label>Entrada</label><input type="number" step="any" id="entryPrice"></div>
+                    <div class="form-group"><label>Saída</label><input type="number" step="any" id="exitPrice"></div>
+                    <div class="form-group"><label>Stop Loss</label><input type="number" step="any" id="stopLoss"></div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>Take Profit / Alvo</label>
-                        <input type="number" step="any" id="takeProfit" placeholder="Alvo final">
-                    </div>
-                    <div class="form-group">
-                        <label>Risco (%) do capital</label>
-                        <input type="number" step="0.1" id="riskPercent" placeholder="Ex: 1.5">
-                    </div>
-                    <div class="form-group">
-                        <label>Resultado (R$ / pontos)</label>
-                        <input type="text" id="pnl" readonly placeholder="Automático">
-                    </div>
+                    <div class="form-group"><label>Take Profit</label><input type="number" step="any" id="takeProfit"></div>
+                    <div class="form-group"><label>Risco (%)</label><input type="number" step="0.1" id="riskPercent"></div>
+                    <div class="form-group"><label>Resultado</label><input type="text" id="pnl" readonly></div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>Estratégia utilizada</label>
-                        <input type="text" id="strategy" placeholder="Ex: Pullback, Rompimento">
-                    </div>
-                    <div class="form-group">
-                        <label>Gestão de Risco (regra seguida)</label>
-                        <select id="riskRule">
-                            <option value="Sim">Sim, segui o plano</option>
-                            <option value="Nao">Não, desviei</option>
-                            <option value="Parcial">Parcialmente</option>
-                        </select>
-                    </div>
+                    <div class="form-group"><label>Estratégia</label><input type="text" id="strategy"></div>
+                    <div class="form-group"><label>Gestão de Risco</label><select id="riskRule"><option>Sim</option><option>Não</option><option>Parcial</option></select></div>
                 </div>
-                <div class="form-group full-width">
-                    <label>Observações / Emoções</label>
-                    <textarea id="notes" rows="2" placeholder="Como estava se sentindo? O que aprendeu?"></textarea>
-                </div>
-                <div class="form-actions">
-                    <button id="addTradeBtn">➕ Adicionar Trade</button>
-                    <button id="clearFormBtn" type="button">Limpar Formulário</button>
-                </div>
+                <div class="form-group full-width"><label>Observações</label><textarea id="notes" rows="2"></textarea></div>
+                <div class="form-actions"><button id="addTradeBtn">➕ Adicionar Trade</button><button id="clearFormBtn">Limpar</button></div>
             </div>
         </div>
-
         <div class="trade-list card">
-            <div class="card-header">
-                <h2>📋 Histórico de Trades</h2>
-                <button id="exportTradesBtn" style="background:#1f5e7a; color:white;">📎 Exportar CSV</button>
-            </div>
-            <div class="card-body" id="tradesContainer">
-                <div class="empty-message">Nenhum trade registrado ainda.</div>
-            </div>
+            <div class="card-header"><h2>📋 Histórico</h2><button id="exportTradesBtn" style="background:#1f5e7a; color:white;">📎 Exportar CSV</button></div>
+            <div class="card-body" id="tradesContainer"><div class="empty-message">Nenhum trade registrado.</div></div>
+        </div>
+    </div>
+
+    <!-- Sugestões de Melhorias Futuras -->
+    <div class="suggestions-card">
+        <div class="card-header"><h2>💡 Sugestões de Melhorias para o Sistema</h2></div>
+        <div class="card-body">
+            <ul>
+                <li>📅 Calendário econômico integrado (dados do Bacen, FOMC, etc.)</li>
+                <li>📈 Gráfico de desempenho diário/semanal do patrimônio e trades</li>
+                <li>🔔 Alertas de preço para as ações monitoradas</li>
+                <li>🧪 Backtest rápido de estratégias com base nos trades registrados</li>
+                <li>📱 Aplicativo PWA para usar no celular offline</li>
+                <li>📊 Análise de sentimento de notícias via API</li>
+                <li>⚡ Sincronização com a nuvem (Google Drive/Firebase) para acessar em vários dispositivos</li>
+            </ul>
         </div>
     </div>
 
     <div style="display: flex; justify-content: center; margin: 20px 0;">
         <button id="fullResetDay" class="btn-fullreset">🔄 Reset Checklists e Stops (mantém trades e patrimônio)</button>
     </div>
-
-    <footer>
-        Checklist dinâmico + Diário de Trades + Controle de Patrimônio + Ativos personalizáveis.<br>
-        Todos os dados ficam salvos no navegador.
-    </footer>
+    <footer>Todos os dados ficam salvos no navegador. Horários baseados em GMT-3 (horário de Brasília).</footer>
 </div>
-
 <script src="script.js"></script>
 </body>
 </html>
