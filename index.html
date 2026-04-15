@@ -32,7 +32,7 @@
     <!-- Linha 1: Checklists (accordion) + Notícias -->
     <div class="dashboard">
         <div class="checklists-accordion">
-            <!-- Accordion items (igual ao anterior, mas compactado) -->
+            <!-- Accordion items (compactado, igual ao anterior) -->
             <div class="accordion-item">
                 <div class="accordion-header" data-target="checklist1">
                     <h2>🧠 1. Mental & Pré-Abertura</h2>
@@ -102,7 +102,7 @@
             </div>
         </div>
 
-        <!-- Card Notícias (mantido) -->
+        <!-- Card Notícias -->
         <div class="news-card">
             <div class="card-header"><h2>📰 Notícias Importantes</h2></div>
             <div class="card-body">
@@ -118,22 +118,56 @@
         </div>
     </div>
 
-    <!-- NOVIDADE: Gráfico de Horários dos Mercados -->
+    <!-- GRÁFICO DE HORÁRIOS DOS MERCADOS (CORRIGIDO E HARMONIOSO) -->
     <div class="markets-section">
         <div class="card">
             <div class="card-header"><h2>🌍 Horário de Abertura dos Mercados Mundiais (GMT-3)</h2></div>
             <div class="card-body">
                 <div class="market-timeline">
-                    <!-- Eixo do tempo (0h às 23h) -->
+                    <!-- Eixo do tempo com marcações a cada 2h para não poluir -->
                     <div class="timeline-axis">
-                        <span>0h</span><span>1h</span><span>2h</span><span>3h</span><span>4h</span><span>5h</span><span>6h</span><span>7h</span><span>8h</span><span>9h</span><span>10h</span><span>11h</span><span>12h</span><span>13h</span><span>14h</span><span>15h</span><span>16h</span><span>17h</span><span>18h</span><span>19h</span><span>20h</span><span>21h</span><span>22h</span><span>23h</span>
+                        <span>00h</span><span>02h</span><span>04h</span><span>06h</span><span>08h</span><span>10h</span><span>12h</span><span>14h</span><span>16h</span><span>18h</span><span>20h</span><span>22h</span><span>24h</span>
                     </div>
-                    <!-- Barras dos mercados -->
-                    <div class="market-row" data-market="NY"><span class="market-name">🇺🇸 Nova York</span><div class="bar-container"><div class="bar" style="left: 43.75%; width: 27.08%;"></div></div><span class="market-hours">10:30 - 17:00</span></div>
-                    <div class="market-row" data-market="LON"><span class="market-name">🇬🇧 Londres</span><div class="bar-container"><div class="bar" style="left: 20.83%; width: 31.25%;"></div></div><span class="market-hours">05:00 - 12:30</span></div>
-                    <div class="market-row" data-market="TKY"><span class="market-name">🇯🇵 Tóquio</span><div class="bar-container"><div class="bar" style="left: 87.5%; width: 37.5%;"></div></div><span class="market-hours">21:00 - 06:00*</span></div>
-                    <div class="market-row" data-market="B3"><span class="market-name">🇧🇷 B3</span><div class="bar-container"><div class="bar" style="left: 41.67%; width: 33.33%;"></div></div><span class="market-hours">10:00 - 17:55</span></div>
-                    <div class="market-row" data-market="XET"><span class="market-name">🇩🇪 Xetra</span><div class="bar-container"><div class="bar" style="left: 16.67%; width: 35.42%;"></div></div><span class="market-hours">04:00 - 12:30</span></div>
+                    <!-- Nova York: 10:30 - 17:00 -->
+                    <div class="market-row">
+                        <span class="market-name">🇺🇸 Nova York</span>
+                        <div class="bar-container">
+                            <div class="bar" style="left: 43.75%; width: 27.08%;"></div>
+                        </div>
+                        <span class="market-hours">10:30 - 17:00</span>
+                    </div>
+                    <!-- Londres: 05:00 - 12:30 -->
+                    <div class="market-row">
+                        <span class="market-name">🇬🇧 Londres</span>
+                        <div class="bar-container">
+                            <div class="bar" style="left: 20.83%; width: 31.25%;"></div>
+                        </div>
+                        <span class="market-hours">05:00 - 12:30</span>
+                    </div>
+                    <!-- Tóquio: 21:00 - 06:00 (mostramos apenas até 24h, com nota) -->
+                    <div class="market-row">
+                        <span class="market-name">🇯🇵 Tóquio</span>
+                        <div class="bar-container">
+                            <div class="bar" style="left: 87.5%; width: 12.5%; background: #2c7a4d;"></div>
+                        </div>
+                        <span class="market-hours">21:00 - 06:00*</span>
+                    </div>
+                    <!-- B3: 10:00 - 17:55 -->
+                    <div class="market-row">
+                        <span class="market-name">🇧🇷 B3</span>
+                        <div class="bar-container">
+                            <div class="bar" style="left: 41.67%; width: 33.33%;"></div>
+                        </div>
+                        <span class="market-hours">10:00 - 17:55</span>
+                    </div>
+                    <!-- Xetra: 04:00 - 12:30 -->
+                    <div class="market-row">
+                        <span class="market-name">🇩🇪 Xetra</span>
+                        <div class="bar-container">
+                            <div class="bar" style="left: 16.67%; width: 35.42%;"></div>
+                        </div>
+                        <span class="market-hours">04:00 - 12:30</span>
+                    </div>
                 </div>
                 <div class="overlap-info">
                     <strong>🔄 Sobreposições (maior liquidez):</strong><br>
@@ -141,12 +175,12 @@
                     • NY + B3: 10:30 - 17:00<br>
                     • Londres + B3: 10:00 - 12:30
                 </div>
-                <div class="time-note">*Tóquio: abre 21h e fecha 6h do dia seguinte (horário de Brasília).</div>
+                <div class="time-note">*Tóquio: abre às 21h e fecha às 6h do dia seguinte. A barra representa o período até meia-noite.</div>
             </div>
         </div>
     </div>
 
-    <!-- NOVIDADE: Monitor de Ações do Mini Índice -->
+    <!-- MONITOR DE AÇÕES DO MINI ÍNDICE -->
     <div class="stocks-section">
         <div class="card">
             <div class="card-header">
@@ -162,7 +196,7 @@
         </div>
     </div>
 
-    <!-- SEÇÃO DIÁRIO DE TRADES (mantida igual) -->
+    <!-- DIÁRIO DE TRADES (mantido) -->
     <div class="diary-section">
         <div class="diary-header">
             <h2>📔 Diário de Trades</h2>
@@ -207,7 +241,7 @@
         </div>
     </div>
 
-    <!-- Sugestões de Melhorias Futuras -->
+    <!-- Sugestões de Melhorias -->
     <div class="suggestions-card">
         <div class="card-header"><h2>💡 Sugestões de Melhorias para o Sistema</h2></div>
         <div class="card-body">
@@ -218,7 +252,7 @@
                 <li>🧪 Backtest rápido de estratégias com base nos trades registrados</li>
                 <li>📱 Aplicativo PWA para usar no celular offline</li>
                 <li>📊 Análise de sentimento de notícias via API</li>
-                <li>⚡ Sincronização com a nuvem (Google Drive/Firebase) para acessar em vários dispositivos</li>
+                <li>⚡ Sincronização com a nuvem (Google Drive/Firebase)</li>
             </ul>
         </div>
     </div>
