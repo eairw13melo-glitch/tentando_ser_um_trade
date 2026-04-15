@@ -328,3 +328,44 @@ footer {
 button { transition: 0.2s; cursor: pointer; }
 button:hover { transform: scale(0.97); }
 .empty-message { text-align: center; color: #7c8b97; padding: 30px; }
+
+/* ... (todo o CSS anterior permanece igual) ... */
+
+/* NOVOS ESTILOS PARA CALENDÁRIO E GRÁFICO */
+.calendar-section, .performance-section {
+    margin-bottom: 24px;
+}
+.calendar-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.calendar-event {
+    background: #f8fafc;
+    border-left: 4px solid #1a5f7a;
+    padding: 12px 16px;
+    border-radius: 16px;
+    font-size: 0.9rem;
+}
+.calendar-event strong {
+    color: #0f3b4f;
+}
+.calendar-event .date {
+    font-family: monospace;
+    font-weight: 600;
+    margin-right: 16px;
+}
+.backup-card {
+    background: white;
+    padding: 6px 16px;
+    border-radius: 40px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid #e2e8f0;
+}
+#performanceChart {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 8px;
+}
