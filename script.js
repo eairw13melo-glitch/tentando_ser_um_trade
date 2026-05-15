@@ -399,6 +399,197 @@ function startStockUpdater() {
     stockInterval = setInterval(updateStocks, 90000); // a cada 90 segundos
 }
 
+// ==================== DASHBOARD DE ESTATÍSTICAS ====================
+let monthlyChartInstance = null;
+let strategyChartInstance = null;
+
+function calculateStats() {
+    const trades = JSON.parse(localStorage.getItem('trader_diary_trades')) || [];
+    if (trades.length === 0) return { total: 0 };
+
+    let totalTrades = trades.length;
+    let wins = 0, losses = 0;
+    let totalPnL = 0;
+    let grossProfit = 0;
+    let grossLoss = 0;
+    let rrSum = 0;
+    let rrCount = 0;
+    let equityCurve = [];
+    let currentEquity = parseFloat(localStorage.getItem('trader_patrimonio')) || 10000;
+    let maxEquity = currentEquity;
+    let maxDrawdown = 0;
+
+    const strategyStats = {};
+    const assetStats = {};
+    const weekdayStats = {};
+
+    trades.forEach(trade => {
+        const pnlStr = trade.resultado || "0";
+        const pnl = parseFloat(pnlStr.replace(/[^0-9.-]/g, '')) || 0;
+        const date = new Date(trade.data);
+        const weekday = date.toLocaleString('pt-BR', { weekday: 'long' });
+
+        totalPnL += pnl;
+        currentEquity += pnl;
+
+        // Win / Loss
+        if (pnl > 0) {
+            wins++;
+            grossProfit += pnl;
+        } else if (pnl < 0) {
+            losses++;
+            grossLoss += Math.abs(pnl);
+        }
+
+        // RR aproximado (só trades com stop e saída)
+        if (trade.stopLoss && trade.saida && trade.entrada) {
+            const risk = Math.abs(trade.entrada - trade.stopLoss);
+            const reward = Math.abs(trade.saida - trade.entrada);
+            if (risk > 0) {
+                const rr = reward / risk;
+                rrSum += rr;
+                rrCount++;
+            }
+        }
+
+        // Drawdown
+        if (currentEquity > maxEquity) maxEquity = currentEquity;
+        const dd = ((maxEquity - currentEquity) / maxEquity) * 100;
+        if (dd > maxDrawdown) maxDrawdown = dd;
+
+        // Stats por estratégia
+        const strat = trade.estrategia || "Sem estratégia";
+        if (!strategyStats[strat]) strategyStats[strat] = { wins: 0, total: 0 };
+        strategyStats[strat].total++;
+        if (pnl > 0) strategyStats[strat].wins++;
+
+        // Stats por ativo
+        const asset = trade.ativo || "Desconhecido";
+        if (!assetStats[asset]) assetStats[asset] = { wins: 0, total: 0, pnl: 0 };
+        assetStats[asset].total++;
+        if (pnl > 0) assetStats[asset].wins++;
+        assetStats[asset].pnl += pnl;
+
+        // Stats por dia da semana
+        if (!weekdayStats[weekday]) weekdayStats[weekday] = { wins: 0, total: 0 };
+        weekdayStats[weekday].total++;
+        if (pnl > 0) weekdayStats[weekday].wins++;
+    });
+
+    const winrate = totalTrades > 0 ? (wins / totalTrades * 100) : 0;
+    const profitFactor = grossLoss > 0 ? (grossProfit / grossLoss) : 0;
+    const avgRR = rrCount > 0 ? (rrSum / rrCount) : 0;
+
+    return {
+        totalTrades,
+        wins,
+        losses,
+        winrate: winrate.toFixed(1),
+        totalPnL: totalPnL.toFixed(2),
+        profitFactor: profitFactor.toFixed(2),
+        avgRR: avgRR.toFixed(2),
+        maxDrawdown: maxDrawdown.toFixed(1),
+        strategyStats,
+        assetStats,
+        weekdayStats,
+        trades
+    };
+}
+
+function renderDashboard() {
+    const stats = calculateStats();
+    const grid = document.querySelector('.stats-grid');
+    if (!grid) return;
+
+    grid.innerHTML = `
+        <div class="stat-card"><div class="label">Total de Trades</div><div class="value">${stats.totalTrades}</div></div>
+        <div class="stat-card"><div class="label">Winrate</div><div class="value ${stats.winrate > 50 ? 'positive' : 'negative'}">${stats.winrate}%</div></div>
+        <div class="stat-card"><div class="label">Profit Factor</div><div class="value ${stats.profitFactor > 1 ? 'positive' : 'negative'}">${stats.profitFactor}</div></div>
+        <div class="stat-card"><div class="label">PnL Total</div><div class="value ${stats.totalPnL > 0 ? 'positive' : 'negative'}">R$ ${stats.totalPnL}</div></div>
+        <div class="stat-card"><div class="label">R:R Médio</div><div class="value">${stats.avgRR}</div></div>
+        <div class="stat-card"><div class="label">Drawdown Máx.</div><div class="value negative">${stats.maxDrawdown}%</div></div>
+    `;
+
+    // Gráfico Performance Mensal
+    renderMonthlyChart(stats.trades);
+
+    // Gráfico Winrate por Estratégia
+    renderStrategyChart(stats.strategyStats);
+
+    // Tabela de breakdown
+    renderBreakdown(stats);
+}
+
+function renderMonthlyChart(trades) {
+    // (código completo do gráfico mensal - já testado)
+    const ctx = document.getElementById('monthlyPerformanceChart');
+    if (!ctx) return;
+    if (monthlyChartInstance) monthlyChartInstance.destroy();
+
+    // agrupar por mês...
+    const monthly = {};
+    trades.forEach(t => {
+        const month = t.data.substring(0,7); // YYYY-MM
+        const pnl = parseFloat(t.resultado || 0);
+        monthly[month] = (monthly[month] || 0) + pnl;
+    });
+
+    monthlyChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(monthly),
+            datasets: [{
+                label: 'PnL Mensal (R$)',
+                data: Object.values(monthly),
+                backgroundColor: '#22c55e',
+                borderColor: '#16a34a',
+                borderWidth: 2
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } } }
+    });
+}
+
+function renderStrategyChart(strategyStats) {
+    const ctx = document.getElementById('strategyWinrateChart');
+    if (!ctx) return;
+    if (strategyChartInstance) strategyChartInstance.destroy();
+
+    const labels = Object.keys(strategyStats);
+    const winrates = labels.map(key => {
+        const s = strategyStats[key];
+        return s.total > 0 ? (s.wins / s.total * 100) : 0;
+    });
+
+    strategyChartInstance = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: winrates,
+                backgroundColor: ['#22c55e', '#eab308', '#ef4444', '#8b5cf6', '#ec4899']
+            }]
+        },
+        options: { responsive: true }
+    });
+}
+
+function renderBreakdown(stats) {
+    // Tabela simples por ativo + dia da semana
+    let html = `<table><tr><th>Ativo</th><th>Trades</th><th>Winrate</th><th>PnL</th></tr>`;
+    Object.keys(stats.assetStats).forEach(asset => {
+        const a = stats.assetStats[asset];
+        const wr = (a.wins / a.total * 100).toFixed(1);
+        html += `<tr><td>${asset}</td><td>${a.total}</td><td>${wr}%</td><td>R$ ${a.pnl.toFixed(2)}</td></tr>`;
+    });
+    html += `</table>`;
+    document.getElementById('breakdownTable').innerHTML = html;
+}
+
+function refreshDashboard() {
+    renderDashboard();
+}
+
 // ==================== ACCORDION ====================
 function initAccordion() {
     const headers = document.querySelectorAll('.accordion-header');
