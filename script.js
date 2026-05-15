@@ -314,49 +314,78 @@ function importAllData(file) {
 
 // ==================== MONITOR DE AÇÕES ====================
 const stocks = [
-    { symbol: "VALE3.SA", name: "VALE3" }, { symbol: "PETR4.SA", name: "PETR4" },
-    { symbol: "ITUB4.SA", name: "ITUB4" }, { symbol: "BBDC4.SA", name: "BBDC4" },
-    { symbol: "BBAS3.SA", name: "BBAS3" }, { symbol: "B3SA3.SA", name: "B3SA3" },
-    { symbol: "ABEV3.SA", name: "ABEV3" }
+    { symbol: "^BVSP", name: "IBOVESPA" },
+    { symbol: "WIN", name: "MINI ÍNDICE" },           // Mini Ibovespa (futuro)
+    { symbol: "VALE3.SA", name: "VALE3" },
+    { symbol: "PETR4.SA", name: "PETR4" },
+    { symbol: "ITUB4.SA", name: "ITUB4" },
+    { symbol: "BBDC4.SA", name: "BBDC4" },
+    { symbol: "BBAS3.SA", name: "BBAS3" },
+    { symbol: "B3SA3.SA", name: "B3SA3" }
 ];
+
 async function fetchStockQuote(symbol) {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`;
+    // ✅ CORS PROXY (resolve o bloqueio do navegador)
+    const proxy = "https://api.allorigins.win/get?url=";
+    const yahooUrl = encodeURIComponent(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`);
+    
     try {
-        const response = await fetch(url);
-        const data = await response.json();
+        const response = await fetch(proxy + yahooUrl);
+        const proxyData = await response.json();
+        const data = JSON.parse(proxyData.contents);   // Allorigins retorna o JSON dentro de .contents
+
         const result = data.chart.result[0];
-        if (!result) throw new Error();
+        if (!result) throw new Error("Sem dados");
+
         const meta = result.meta;
-        const regularMarketPrice = meta.regularMarketPrice;
-        const previousClose = meta.chartPreviousClose;
-        const change = regularMarketPrice - previousClose;
-        const changePercent = (change / previousClose) * 100;
-        return { price: regularMarketPrice, change, changePercent };
-    } catch (error) { return null; }
+        const price = meta.regularMarketPrice || meta.previousClose;
+        const previousClose = meta.chartPreviousClose || meta.previousClose;
+        const change = price - previousClose;
+        const changePercent = previousClose ? (change / previousClose) * 100 : 0;
+
+        return { price, change, changePercent };
+    } catch (error) {
+        console.error(`Erro ao buscar ${symbol}:`, error);
+        return null;
+    }
 }
+
 async function updateStocks() {
     const grid = document.getElementById('stocksGrid');
     if (!grid) return;
-    grid.innerHTML = '<div class="loading">Carregando cotações...</div>';
+    
+    grid.innerHTML = '<div class="loading">Carregando cotações ao vivo...</div>';
+
     const results = await Promise.all(stocks.map(async (stock) => {
         const quote = await fetchStockQuote(stock.symbol);
         return { ...stock, quote };
     }));
+
     grid.innerHTML = '';
     results.forEach(stock => {
-        const card = document.createElement('div'); card.className = 'stock-card';
+        const card = document.createElement('div');
+        card.className = 'stock-card';
+        
         const changeClass = stock.quote && stock.quote.change >= 0 ? 'positive' : 'negative';
         const changeSign = stock.quote && stock.quote.change >= 0 ? '+' : '';
+        
         card.innerHTML = `
             <div class="stock-symbol">${stock.name}</div>
             <div class="stock-price">${stock.quote ? `R$ ${stock.quote.price.toFixed(2)}` : '--'}</div>
-            <div class="stock-change ${changeClass}">${stock.quote ? `${changeSign}${stock.quote.change.toFixed(2)} (${changeSign}${stock.quote.changePercent.toFixed(2)}%)` : '--'}</div>
+            <div class="stock-change ${changeClass}">
+                ${stock.quote ? `${changeSign}${stock.quote.change.toFixed(2)} (${changeSign}${stock.quote.changePercent.toFixed(2)}%)` : '--'}
+            </div>
         `;
         grid.appendChild(card);
     });
 }
+
 let stockInterval;
-function startStockUpdater() { updateStocks(); if (stockInterval) clearInterval(stockInterval); stockInterval = setInterval(updateStocks, 60000); }
+function startStockUpdater() {
+    updateStocks();                                   // primeira carga imediata
+    if (stockInterval) clearInterval(stockInterval);
+    stockInterval = setInterval(updateStocks, 60000); // a cada 60 segundos
+}
 
 // ==================== ACCORDION ====================
 function initAccordion() {
