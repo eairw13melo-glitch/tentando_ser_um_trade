@@ -150,19 +150,23 @@
         </div>
     </div>
 
-    <!-- Monitor de Ações do Mini Índice -->
-    <div class="stocks-section">
-        <div class="card">
-            <div class="card-header">
-                <h2>📊 Principais Ações do Mini Índice (Ibovespa)</h2>
-                <button id="refreshStocksBtn" class="small-btn" style="background:#1f5e7a; color:white;">🔄 Atualizar Agora</button>
-            </div>
-            <div class="card-body">
-                <div class="stocks-grid" id="stocksGrid"><div class="loading">Carregando cotações...</div></div>
-                <div class="update-info">Atualização automática a cada 60s | Dados: Yahoo Finance</div>
-            </div>
-        </div>
+    <!-- ==================== MONITOR DE AÇÕES ==================== -->
+<section class="stocks-section">
+    <div class="section-header">
+        <h2>📊 Principais Ações do Mini Índice (Ibovespa)</h2>
+        <button onclick="updateStocks()" class="btn-update">
+            🔄 Atualizar Agora
+        </button>
     </div>
+
+    <div id="stocksGrid" class="stocks-grid">
+        <!-- O JavaScript vai preencher aqui automaticamente -->
+    </div>
+
+    <p class="stocks-footer">
+        Atualização automática a cada 60s | Dados: brapi.dev
+    </p>
+</section>
 
     <!-- Calendário Econômico (estático, mas editável) -->
     <div class="calendar-section">
