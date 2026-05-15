@@ -210,38 +210,6 @@ function initDiary() {
     document.getElementById('tradeType').addEventListener('change', updatePnL);
 }
 
-// ==================== GRÁFICO DE PERFORMANCE ====================
-let performanceChart = null;
-function updatePerformanceChart() {
-    const canvas = document.getElementById('performanceChart');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    // Calcular patrimônio acumulado a partir dos trades (ordenados por data)
-    const sortedTrades = [...trades].sort((a,b) => new Date(a.data) - new Date(b.data));
-    let patrimonios = [];
-    let currentPatrimonio = patrimonio;
-    // Para cada trade (assumindo que resultado é o lucro/prejuízo em reais)
-    for (let i = 0; i < sortedTrades.length; i++) {
-        const t = sortedTrades[i];
-        if (t.resultado && !isNaN(parseFloat(t.resultado))) {
-            currentPatrimonio += parseFloat(t.resultado);
-        }
-        patrimonios.push({ data: t.data, valor: currentPatrimonio });
-    }
-    // Se não houver trades, mostrar linha estável
-    if (patrimonios.length === 0) {
-        patrimonios = [{ data: new Date().toISOString().slice(0,10), valor: patrimonio }];
-    }
-    const labels = patrimonios.map(p => p.data);
-    const values = patrimonios.map(p => p.valor);
-    if (performanceChart) performanceChart.destroy();
-    performanceChart = new Chart(ctx, {
-        type: 'line',
-        data: { labels, datasets: [{ label: 'Patrimônio (R$)', data: values, borderColor: '#1e7e5e', backgroundColor: 'rgba(30,126,94,0.1)', fill: true, tension: 0.2 }] },
-        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top' } } }
-    });
-}
-
 // ==================== CALENDÁRIO ECONÔMICO (estático) ====================
 function loadEconomicCalendar() {
     // Dados de exemplo (substituir por API futura)
