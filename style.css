@@ -369,3 +369,61 @@ button:hover { transform: scale(0.97); }
     border-radius: 20px;
     padding: 8px;
 }
+
+/* ==================== BOTÃO ATUALIZAR - ESTILO MELHORADO ==================== */
+.btn-update {
+    background: linear-gradient(90deg, #00d4ff, #00ff9d);
+    color: #0f172a;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-update:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(0, 212, 255, 0.4);
+    background: linear-gradient(90deg, #00ff9d, #00d4ff);
+}
+
+.btn-update:active {
+    transform: scale(0.95);
+}
+
+.btn-update .icon {
+    transition: transform 0.4s ease;
+}
+
+.btn-update:hover .icon {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Estilo do header da seção (para o botão ficar alinhado bonitinho) */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.section-header h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: #e2e8f0;
+}
