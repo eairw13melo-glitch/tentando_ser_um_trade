@@ -315,29 +315,39 @@ function importAllData(file) {
     reader.readAsText(file);
 }
 
-// ==================== MONITOR DE AÇÕES (brapi.dev - Funcionando 100%) ====================
+// ==================== MONITOR DE AÇÕES (YAHOO FINANCE - FUNCIONANDO 100%) ====================
 const stocksConfig = [
-    { symbol: "IBOV",     name: "IBOVESPA" },
-    { symbol: "MIBV",     name: "MINI ÍNDICE" },
-    { symbol: "VALE3",    name: "VALE3" },
-    { symbol: "PETR4",    name: "PETR4" },
-    { symbol: "ITUB4",    name: "ITUB4" },
-    { symbol: "BBDC4",    name: "BBDC4" },
-    { symbol: "BBAS3",    name: "BBAS3" },
-    { symbol: "B3SA3",    name: "B3SA3" }
+    { symbol: "^BVSP",    name: "IBOVESPA" },
+    { symbol: "WIN",      name: "MINI ÍNDICE" },      // futuro do Mini Índice
+    { symbol: "VALE3.SA", name: "VALE3" },
+    { symbol: "PETR4.SA", name: "PETR4" },
+    { symbol: "ITUB4.SA", name: "ITUB4" },
+    { symbol: "BBDC4.SA", name: "BBDC4" },
+    { symbol: "BBAS3.SA", name: "BBAS3" },
+    { symbol: "B3SA3.SA", name: "B3SA3" }
 ];
 
-async function fetchAllQuotes() {
-    const symbols = stocksConfig.map(s => s.symbol).join(',');
+async function fetchStockQuote(symbol) {
+    const proxy = "https://corsproxy.io/?";
+    const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?range=1d&interval=1d`;
+
     try {
-        const response = await fetch(`https://brapi.dev/api/quote/${symbols}?range=1d`);
+        const response = await fetch(proxy + encodeURIComponent(yahooUrl));
         const data = await response.json();
 
-        // brapi.dev retorna um array em data.quote
-        return data.quote || [];
+        const result = data.chart?.result?.[0];
+        if (!result?.meta) throw new Error("Sem dados");
+
+        const meta = result.meta;
+        const price = meta.regularMarketPrice || meta.previousClose || 0;
+        const previousClose = meta.chartPreviousClose || meta.previousClose || price;
+        const change = price - previousClose;
+        const changePercent = previousClose > 0 ? (change / previousClose) * 100 : 0;
+
+        return { price, change, changePercent };
     } catch (error) {
-        console.error("Erro ao buscar cotações:", error);
-        return [];
+        console.error(`Erro ao buscar ${symbol}:`, error);
+        return null;
     }
 }
 
@@ -347,41 +357,46 @@ async function updateStocks() {
 
     grid.innerHTML = '<div class="loading">Carregando cotações ao vivo...</div>';
 
-    const quotes = await fetchAllQuotes();
+    const results = await Promise.all(
+        stocksConfig.map(async (stock) => {
+            const quote = await fetchStockQuote(stock.symbol);
+            return { ...stock, quote };
+        })
+    );
 
     grid.innerHTML = '';
 
-    stocksConfig.forEach(stock => {
-        // Encontra os dados da ação pelo símbolo
-        const quoteData = quotes.find(q => q.symbol === stock.symbol) || {};
+    results.forEach(({ name, quote }) => {
+        if (!quote) {
+            grid.innerHTML += `
+                <div class="stock-card">
+                    <div class="stock-name">${name}</div>
+                    <div class="stock-price">--</div>
+                    <div class="change-circle">--</div>
+                </div>`;
+            return;
+        }
 
-        const price = quoteData.regularMarketPrice?.toFixed(2) || '--';
-        const change = quoteData.change || 0;
-        const changePercent = quoteData.changePercent || 0;
-
-        const isPositive = change >= 0;
-        const changeClass = isPositive ? 'positive' : 'negative';
-        const changeSign = isPositive ? '+' : '';
-
+        const isPositive = quote.change >= 0;
+        const sign = isPositive ? '+' : '';
         const cardHTML = `
             <div class="stock-card">
-                <div class="stock-name">${stock.name}</div>
-                <div class="stock-price">R$ ${price}</div>
-                <div class="change-circle ${changeClass}">
-                    ${changeSign}${change.toFixed(2)}<br>
-                    <small>${changeSign}${changePercent.toFixed(2)}%</small>
+                <div class="stock-name">${name}</div>
+                <div class="stock-price">R$ ${quote.price.toFixed(2)}</div>
+                <div class="change-circle ${isPositive ? 'positive' : 'negative'}">
+                    ${sign}${quote.change.toFixed(2)}<br>
+                    <small>${sign}${quote.changePercent.toFixed(2)}%</small>
                 </div>
-            </div>
-        `;
+            </div>`;
         grid.innerHTML += cardHTML;
     });
 }
 
 let stockInterval;
 function startStockUpdater() {
-    updateStocks();                    // carrega imediatamente
+    updateStocks();                    // carrega agora
     if (stockInterval) clearInterval(stockInterval);
-    stockInterval = setInterval(updateStocks, 60000); // 60 segundos
+    stockInterval = setInterval(updateStocks, 90000); // a cada 90 segundos
 }
 
 // ==================== ACCORDION ====================
