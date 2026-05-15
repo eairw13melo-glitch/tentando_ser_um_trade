@@ -242,23 +242,20 @@ function updatePerformanceChart() {
     });
 }
 
-// ==================== CALENDÁRIO ECONÔMICO (atualizado maio/2026) ====================
+// ==================== CALENDÁRIO ECONÔMICO (estático) ====================
 function loadEconomicCalendar() {
-    // ✅ Dados atualizados em 15/05/2026
+    // Dados de exemplo (substituir por API futura)
     const eventos = [
-        { data: "2026-05-19", pais: "Brasil", evento: "Boletim Focus (BCB)", impacto: "Médio" },
-        { data: "2026-05-20", pais: "EUA", evento: "Vendas no Varejo", impacto: "Alto" },
-        { data: "2026-05-21", pais: "Brasil", evento: "IPCA-15 (prévia inflação)", impacto: "Muito Alto" },
-        { data: "2026-05-27", pais: "EUA", evento: "Confiança do Consumidor (Conference Board)", impacto: "Médio" },
-        { data: "2026-05-28", pais: "Brasil", evento: "Balança Comercial", impacto: "Alto" },
-        { data: "2026-06-03", pais: "Brasil", evento: "PMI Industrial", impacto: "Médio" },
-        { data: "2026-06-04", pais: "EUA", evento: "Decisão FOMC (juros)", impacto: "Muito Alto" },
-        { data: "2026-06-10", pais: "Brasil", evento: "Decisão Copom (Selic)", impacto: "Muito Alto" }
+        { data: "2025-04-17", pais: "EUA", evento: "Pedidos de auxílio-desemprego", impacto: "Alto" },
+        { data: "2025-04-18", pais: "Brasil", evento: "IPCA-15 (prévia da inflação)", impacto: "Alto" },
+        { data: "2025-04-20", pais: "China", evento: "Taxa de juros (LPR)", impacto: "Médio" },
+        { data: "2025-04-22", pais: "Zona do Euro", evento: "PMI Composto (flash)", impacto: "Alto" },
+        { data: "2025-04-23", pais: "EUA", evento: "FOMC - ata da última reunião", impacto: "Alto" },
+        { data: "2025-04-30", pais: "Brasil", evento: "Decisão Copom (Selic)", impacto: "Muito Alto" },
+        { data: "2025-05-02", pais: "EUA", evento: "Payroll (geração de empregos)", impacto: "Muito Alto" }
     ];
-
     const container = document.getElementById('economicCalendar');
     if (!container) return;
-
     container.innerHTML = eventos.map(ev => `
         <div class="calendar-event">
             <span class="date">📅 ${ev.data}</span>
@@ -315,339 +312,51 @@ function importAllData(file) {
     reader.readAsText(file);
 }
 
-// ==================== MONITOR DE AÇÕES (YAHOO FINANCE - FUNCIONANDO 100%) ====================
-const stocksConfig = [
-    { symbol: "^BVSP",    name: "IBOVESPA" },
-    { symbol: "WIN",      name: "MINI ÍNDICE" },      // futuro do Mini Índice
-    { symbol: "VALE3.SA", name: "VALE3" },
-    { symbol: "PETR4.SA", name: "PETR4" },
-    { symbol: "ITUB4.SA", name: "ITUB4" },
-    { symbol: "BBDC4.SA", name: "BBDC4" },
-    { symbol: "BBAS3.SA", name: "BBAS3" },
-    { symbol: "B3SA3.SA", name: "B3SA3" }
+// ==================== MONITOR DE AÇÕES ====================
+const stocks = [
+    { symbol: "VALE3.SA", name: "VALE3" }, { symbol: "PETR4.SA", name: "PETR4" },
+    { symbol: "ITUB4.SA", name: "ITUB4" }, { symbol: "BBDC4.SA", name: "BBDC4" },
+    { symbol: "BBAS3.SA", name: "BBAS3" }, { symbol: "B3SA3.SA", name: "B3SA3" },
+    { symbol: "ABEV3.SA", name: "ABEV3" }
 ];
-
 async function fetchStockQuote(symbol) {
-    const proxy = "https://corsproxy.io/?";
-    const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?range=1d&interval=1d`;
-
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`;
     try {
-        const response = await fetch(proxy + encodeURIComponent(yahooUrl));
+        const response = await fetch(url);
         const data = await response.json();
-
-        const result = data.chart?.result?.[0];
-        if (!result?.meta) throw new Error("Sem dados");
-
+        const result = data.chart.result[0];
+        if (!result) throw new Error();
         const meta = result.meta;
-        const price = meta.regularMarketPrice || meta.previousClose || 0;
-        const previousClose = meta.chartPreviousClose || meta.previousClose || price;
-        const change = price - previousClose;
-        const changePercent = previousClose > 0 ? (change / previousClose) * 100 : 0;
-
-        return { price, change, changePercent };
-    } catch (error) {
-        console.error(`Erro ao buscar ${symbol}:`, error);
-        return null;
-    }
+        const regularMarketPrice = meta.regularMarketPrice;
+        const previousClose = meta.chartPreviousClose;
+        const change = regularMarketPrice - previousClose;
+        const changePercent = (change / previousClose) * 100;
+        return { price: regularMarketPrice, change, changePercent };
+    } catch (error) { return null; }
 }
-
 async function updateStocks() {
     const grid = document.getElementById('stocksGrid');
     if (!grid) return;
-
-    grid.innerHTML = '<div class="loading">Carregando cotações ao vivo...</div>';
-
-    const results = await Promise.all(
-        stocksConfig.map(async (stock) => {
-            const quote = await fetchStockQuote(stock.symbol);
-            return { ...stock, quote };
-        })
-    );
-
+    grid.innerHTML = '<div class="loading">Carregando cotações...</div>';
+    const results = await Promise.all(stocks.map(async (stock) => {
+        const quote = await fetchStockQuote(stock.symbol);
+        return { ...stock, quote };
+    }));
     grid.innerHTML = '';
-
-    results.forEach(({ name, quote }) => {
-        if (!quote) {
-            grid.innerHTML += `
-                <div class="stock-card">
-                    <div class="stock-name">${name}</div>
-                    <div class="stock-price">--</div>
-                    <div class="change-circle">--</div>
-                </div>`;
-            return;
-        }
-
-        const isPositive = quote.change >= 0;
-        const sign = isPositive ? '+' : '';
-        const cardHTML = `
-            <div class="stock-card">
-                <div class="stock-name">${name}</div>
-                <div class="stock-price">R$ ${quote.price.toFixed(2)}</div>
-                <div class="change-circle ${isPositive ? 'positive' : 'negative'}">
-                    ${sign}${quote.change.toFixed(2)}<br>
-                    <small>${sign}${quote.changePercent.toFixed(2)}%</small>
-                </div>
-            </div>`;
-        grid.innerHTML += cardHTML;
+    results.forEach(stock => {
+        const card = document.createElement('div'); card.className = 'stock-card';
+        const changeClass = stock.quote && stock.quote.change >= 0 ? 'positive' : 'negative';
+        const changeSign = stock.quote && stock.quote.change >= 0 ? '+' : '';
+        card.innerHTML = `
+            <div class="stock-symbol">${stock.name}</div>
+            <div class="stock-price">${stock.quote ? `R$ ${stock.quote.price.toFixed(2)}` : '--'}</div>
+            <div class="stock-change ${changeClass}">${stock.quote ? `${changeSign}${stock.quote.change.toFixed(2)} (${changeSign}${stock.quote.changePercent.toFixed(2)}%)` : '--'}</div>
+        `;
+        grid.appendChild(card);
     });
 }
-
 let stockInterval;
-function startStockUpdater() {
-    updateStocks();                    // carrega agora
-    if (stockInterval) clearInterval(stockInterval);
-    stockInterval = setInterval(updateStocks, 90000); // a cada 90 segundos
-}
-
-// ==================== DASHBOARD DE ESTATÍSTICAS ====================
-let monthlyChartInstance = null;
-let strategyChartInstance = null;
-
-function calculateStats() {
-    const trades = JSON.parse(localStorage.getItem('trader_diary_trades')) || [];
-    if (trades.length === 0) return { total: 0 };
-
-    let totalTrades = trades.length;
-    let wins = 0, losses = 0;
-    let totalPnL = 0;
-    let grossProfit = 0;
-    let grossLoss = 0;
-    let rrSum = 0;
-    let rrCount = 0;
-    let equityCurve = [];
-    let currentEquity = parseFloat(localStorage.getItem('trader_patrimonio')) || 10000;
-    let maxEquity = currentEquity;
-    let maxDrawdown = 0;
-
-    const strategyStats = {};
-    const assetStats = {};
-    const weekdayStats = {};
-
-    trades.forEach(trade => {
-        const pnlStr = trade.resultado || "0";
-        const pnl = parseFloat(pnlStr.replace(/[^0-9.-]/g, '')) || 0;
-        const date = new Date(trade.data);
-        const weekday = date.toLocaleString('pt-BR', { weekday: 'long' });
-
-        totalPnL += pnl;
-        currentEquity += pnl;
-
-        // Win / Loss
-        if (pnl > 0) {
-            wins++;
-            grossProfit += pnl;
-        } else if (pnl < 0) {
-            losses++;
-            grossLoss += Math.abs(pnl);
-        }
-
-        // RR aproximado (só trades com stop e saída)
-        if (trade.stopLoss && trade.saida && trade.entrada) {
-            const risk = Math.abs(trade.entrada - trade.stopLoss);
-            const reward = Math.abs(trade.saida - trade.entrada);
-            if (risk > 0) {
-                const rr = reward / risk;
-                rrSum += rr;
-                rrCount++;
-            }
-        }
-
-        // Drawdown
-        if (currentEquity > maxEquity) maxEquity = currentEquity;
-        const dd = ((maxEquity - currentEquity) / maxEquity) * 100;
-        if (dd > maxDrawdown) maxDrawdown = dd;
-
-        // Stats por estratégia
-        const strat = trade.estrategia || "Sem estratégia";
-        if (!strategyStats[strat]) strategyStats[strat] = { wins: 0, total: 0 };
-        strategyStats[strat].total++;
-        if (pnl > 0) strategyStats[strat].wins++;
-
-        // Stats por ativo
-        const asset = trade.ativo || "Desconhecido";
-        if (!assetStats[asset]) assetStats[asset] = { wins: 0, total: 0, pnl: 0 };
-        assetStats[asset].total++;
-        if (pnl > 0) assetStats[asset].wins++;
-        assetStats[asset].pnl += pnl;
-
-        // Stats por dia da semana
-        if (!weekdayStats[weekday]) weekdayStats[weekday] = { wins: 0, total: 0 };
-        weekdayStats[weekday].total++;
-        if (pnl > 0) weekdayStats[weekday].wins++;
-    });
-
-    const winrate = totalTrades > 0 ? (wins / totalTrades * 100) : 0;
-    const profitFactor = grossLoss > 0 ? (grossProfit / grossLoss) : 0;
-    const avgRR = rrCount > 0 ? (rrSum / rrCount) : 0;
-
-    return {
-        totalTrades,
-        wins,
-        losses,
-        winrate: winrate.toFixed(1),
-        totalPnL: totalPnL.toFixed(2),
-        profitFactor: profitFactor.toFixed(2),
-        avgRR: avgRR.toFixed(2),
-        maxDrawdown: maxDrawdown.toFixed(1),
-        strategyStats,
-        assetStats,
-        weekdayStats,
-        trades
-    };
-}
-
-function renderDashboard() {
-    const stats = calculateStats();
-    const grid = document.querySelector('.stats-grid');
-    if (!grid) return;
-
-    grid.innerHTML = `
-        <div class="stat-card"><div class="label">Total de Trades</div><div class="value">${stats.totalTrades}</div></div>
-        <div class="stat-card"><div class="label">Winrate</div><div class="value ${stats.winrate > 50 ? 'positive' : 'negative'}">${stats.winrate}%</div></div>
-        <div class="stat-card"><div class="label">Profit Factor</div><div class="value ${stats.profitFactor > 1 ? 'positive' : 'negative'}">${stats.profitFactor}</div></div>
-        <div class="stat-card"><div class="label">PnL Total</div><div class="value ${stats.totalPnL > 0 ? 'positive' : 'negative'}">R$ ${stats.totalPnL}</div></div>
-        <div class="stat-card"><div class="label">R:R Médio</div><div class="value">${stats.avgRR}</div></div>
-        <div class="stat-card"><div class="label">Drawdown Máx.</div><div class="value negative">${stats.maxDrawdown}%</div></div>
-    `;
-
-    // Gráfico Performance Mensal
-    renderMonthlyChart(stats.trades);
-
-    // Gráfico Winrate por Estratégia
-    renderStrategyChart(stats.strategyStats);
-
-    // Tabela de breakdown
-    renderBreakdown(stats);
-}
-
-function renderMonthlyChart(trades) {
-    // (código completo do gráfico mensal - já testado)
-    const ctx = document.getElementById('monthlyPerformanceChart');
-    if (!ctx) return;
-    if (monthlyChartInstance) monthlyChartInstance.destroy();
-
-    // agrupar por mês...
-    const monthly = {};
-    trades.forEach(t => {
-        const month = t.data.substring(0,7); // YYYY-MM
-        const pnl = parseFloat(t.resultado || 0);
-        monthly[month] = (monthly[month] || 0) + pnl;
-    });
-
-    monthlyChartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: Object.keys(monthly),
-            datasets: [{
-                label: 'PnL Mensal (R$)',
-                data: Object.values(monthly),
-                backgroundColor: '#22c55e',
-                borderColor: '#16a34a',
-                borderWidth: 2
-            }]
-        },
-        options: { responsive: true, plugins: { legend: { display: false } } }
-    });
-}
-
-function renderStrategyChart(strategyStats) {
-    const ctx = document.getElementById('strategyWinrateChart');
-    if (!ctx) return;
-    if (strategyChartInstance) strategyChartInstance.destroy();
-
-    const labels = Object.keys(strategyStats);
-    const winrates = labels.map(key => {
-        const s = strategyStats[key];
-        return s.total > 0 ? (s.wins / s.total * 100) : 0;
-    });
-
-    strategyChartInstance = new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: labels,
-            datasets: [{
-                data: winrates,
-                backgroundColor: ['#22c55e', '#eab308', '#ef4444', '#8b5cf6', '#ec4899']
-            }]
-        },
-        options: { responsive: true }
-    });
-}
-
-function renderBreakdown(stats) {
-    // Tabela simples por ativo + dia da semana
-    let html = `<table><tr><th>Ativo</th><th>Trades</th><th>Winrate</th><th>PnL</th></tr>`;
-    Object.keys(stats.assetStats).forEach(asset => {
-        const a = stats.assetStats[asset];
-        const wr = (a.wins / a.total * 100).toFixed(1);
-        html += `<tr><td>${asset}</td><td>${a.total}</td><td>${wr}%</td><td>R$ ${a.pnl.toFixed(2)}</td></tr>`;
-    });
-    html += `</table>`;
-    document.getElementById('breakdownTable').innerHTML = html;
-}
-
-function refreshDashboard() {
-    renderDashboard();
-}
-
-// ==================== CALCULADORA DE RISCO ====================
-function calculateRisk() {
-    const patrimonio = parseFloat(document.getElementById('calc-patrimonio').value) || 10000;
-    const riscoPct = parseFloat(document.getElementById('calc-risco').value) || 1;
-    const entrada = parseFloat(document.getElementById('calc-entrada').value) || 0;
-    const stopPontos = parseFloat(document.getElementById('calc-stop').value) || 0;
-    const multiplicador = parseFloat(document.getElementById('calc-multiplicador').value) || 0.20;
-    const rrDesejado = parseFloat(document.getElementById('calc-rr').value) || 2;
-
-    // Valor em risco
-    const valorRisco = patrimonio * (riscoPct / 100);
-
-    // Risco por contrato
-    const riscoPorContrato = stopPontos * multiplicador;
-
-    // Quantidade de contratos
-    let qtdContratos = riscoPorContrato > 0 ? Math.floor(valorRisco / riscoPorContrato) : 0;
-    if (qtdContratos < 1) qtdContratos = 1;
-
-    // Valor total da operação (para futuros)
-    const valorOperacao = qtdContratos * entrada * multiplicador; // aproximado para WIN
-
-    // Stop Loss em dinheiro
-    const stopDinheiro = qtdContratos * stopPontos * multiplicador;
-
-    // Take Profit sugerido
-    const tpDistancia = stopPontos * rrDesejado;
-    const tpPreco = entrada + (tpDistancia); // direção long (ajuste manual se short)
-
-    // Atualiza tela
-    document.getElementById('risco-valor').textContent = `R$ ${valorRisco.toFixed(2)}`;
-    document.getElementById('qtd-contratos').textContent = qtdContratos;
-    document.getElementById('valor-operacao').textContent = `R$ ${valorOperacao.toFixed(2)}`;
-    document.getElementById('stop-dinheiro').textContent = `-R$ ${stopDinheiro.toFixed(2)}`;
-    document.getElementById('tp-sugerido').textContent = `R$ ${tpPreco.toFixed(2)}`;
-}
-
-function usarNoTrade() {
-    const entrada = document.getElementById('calc-entrada').value;
-    const stop = parseFloat(document.getElementById('calc-entrada').value) - parseFloat(document.getElementById('calc-stop').value); // assume long
-
-    // Preenche o formulário do Diário de Trades
-    document.getElementById('trade-entrada').value = entrada;
-    document.getElementById('trade-stopLoss').value = stop.toFixed(2);
-    // você pode adicionar mais campos se quiser
-
-    alert('✅ Dados enviados para o formulário do Diário de Trades!\n\nAgora é só completar o resto e salvar.');
-    // rola até o diário
-    document.querySelector('#diario-section').scrollIntoView({ behavior: 'smooth' });
-}
-
-// Inicializa a calculadora quando carregar
-function initRiskCalculator() {
-    // sincroniza patrimônio com o do site
-    const patrimonioAtual = localStorage.getItem('trader_patrimonio') || '10000';
-    document.getElementById('calc-patrimonio').value = patrimonioAtual;
-    calculateRisk();
-}
+function startStockUpdater() { updateStocks(); if (stockInterval) clearInterval(stockInterval); stockInterval = setInterval(updateStocks, 60000); }
 
 // ==================== ACCORDION ====================
 function initAccordion() {
@@ -686,8 +395,6 @@ function init() {
     initAccordion();
     startStockUpdater();
     loadEconomicCalendar();
-    initRiskCalculator();
-    renderAdvancedPatrimonioChart();
     document.getElementById('editarPatrimonioBtn')?.addEventListener('click', editarPatrimonio);
     document.getElementById('addStopBtn')?.addEventListener('click', addStop);
     document.getElementById('resetStopsBtn')?.addEventListener('click', resetStops);
@@ -701,155 +408,3 @@ function init() {
     importInput?.addEventListener('change', (e) => { if(e.target.files[0]) importAllData(e.target.files[0]); });
 }
 init();
-
-// ==================== MONITOR DE AÇÕES (FUNCIONANDO 100%) ====================
-const stocksConfig = [
-    { symbol: "^BVSP",    name: "IBOVESPA" },
-    { symbol: "WIN",      name: "MINI ÍNDICE" },
-    { symbol: "VALE3.SA", name: "VALE3" },
-    { symbol: "PETR4.SA", name: "PETR4" },
-    { symbol: "ITUB4.SA", name: "ITUB4" },
-    { symbol: "BBDC4.SA", name: "BBDC4" },
-    { symbol: "BBAS3.SA", name: "BBAS3" },
-    { symbol: "B3SA3.SA", name: "B3SA3" }
-];
-
-async function fetchStockQuote(symbol) {
-    const proxy = "https://corsproxy.io/?";
-    const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?range=1d&interval=1d`;
-    try {
-        const response = await fetch(proxy + encodeURIComponent(yahooUrl));
-        const data = await response.json();
-        const result = data.chart?.result?.[0];
-        if (!result?.meta) throw new Error("Sem dados");
-        const meta = result.meta;
-        const price = meta.regularMarketPrice || meta.previousClose || 0;
-        const previousClose = meta.chartPreviousClose || meta.previousClose || price;
-        const change = price - previousClose;
-        const changePercent = previousClose > 0 ? (change / previousClose) * 100 : 0;
-        return { price, change, changePercent };
-    } catch (error) {
-        console.error(`Erro ao buscar ${symbol}:`, error);
-        return null;
-    }
-}
-
-async function updateStocks() {
-    const grid = document.getElementById('stocksGrid');
-    if (!grid) return;
-    grid.innerHTML = '<div class="loading">Carregando cotações ao vivo...</div>';
-    const results = await Promise.all(stocksConfig.map(async (stock) => {
-        const quote = await fetchStockQuote(stock.symbol);
-        return { ...stock, quote };
-    }));
-    grid.innerHTML = '';
-    results.forEach(({ name, quote }) => {
-        if (!quote) {
-            grid.innerHTML += `<div class="stock-card"><div class="stock-name">${name}</div><div class="stock-price">--</div><div class="change-circle">--</div></div>`;
-            return;
-        }
-        const isPositive = quote.change >= 0;
-        const sign = isPositive ? '+' : '';
-        const cardHTML = `
-            <div class="stock-card">
-                <div class="stock-name">${name}</div>
-                <div class="stock-price">R$ ${quote.price.toFixed(2)}</div>
-                <div class="change-circle ${isPositive ? 'positive' : 'negative'}">
-                    ${sign}${quote.change.toFixed(2)}<br>
-                    <small>${sign}${quote.changePercent.toFixed(2)}%</small>
-                </div>
-            </div>`;
-        grid.innerHTML += cardHTML;
-    });
-}
-
-let stockInterval;
-function startStockUpdater() {
-    updateStocks();
-    if (stockInterval) clearInterval(stockInterval);
-    stockInterval = setInterval(updateStocks, 90000);
-}
-
-// ==================== GRÁFICO AVANÇADO DE PATRIMÔNIO + DRAWDOWN ====================
-let equityChartInstance = null;
-
-function renderAdvancedPatrimonioChart() {
-    const trades = JSON.parse(localStorage.getItem('trader_diary_trades')) || [];
-    if (trades.length === 0) return;
-
-    const filterEstrategia = document.getElementById('filter-estrategia').value;
-    const filterAtivo = document.getElementById('filter-ativo').value;
-    const dataInicio = document.getElementById('filter-data-inicio').value;
-    const dataFim = document.getElementById('filter-data-fim').value;
-
-    let filteredTrades = trades.filter(trade => {
-        const date = new Date(trade.data);
-        const matchEstrategia = !filterEstrategia || trade.estrategia === filterEstrategia;
-        const matchAtivo = !filterAtivo || trade.ativo === filterAtivo;
-        const matchData = (!dataInicio || date >= new Date(dataInicio)) && (!dataFim || date <= new Date(dataFim));
-        return matchEstrategia && matchAtivo && matchData;
-    });
-
-    filteredTrades.sort((a, b) => new Date(a.data) - new Date(b.data));
-
-    let equity = parseFloat(localStorage.getItem('trader_patrimonio')) || 10000;
-    let maxEquity = equity;
-    const equityData = [];
-    const drawdownData = [];
-    const labels = [];
-
-    filteredTrades.forEach(trade => {
-        const pnl = parseFloat(trade.resultado || 0);
-        equity += pnl;
-        labels.push(new Date(trade.data).toLocaleDateString('pt-BR'));
-        if (equity > maxEquity) maxEquity = equity;
-        const dd = ((maxEquity - equity) / maxEquity) * 100;
-        equityData.push(equity);
-        drawdownData.push(-dd);
-    });
-
-    updatePatrimonioFilters(trades);
-
-    const ctx = document.getElementById('equityDrawdownChart');
-    if (!ctx) return;
-    if (equityChartInstance) equityChartInstance.destroy();
-
-    equityChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [
-                { label: 'Equity (R$)', data: equityData, borderColor: '#22c55e', backgroundColor: 'rgba(34, 197, 94, 0.1)', borderWidth: 3, tension: 0.3, yAxisID: 'y' },
-                { label: 'Drawdown (%)', data: drawdownData, borderColor: '#ef4444', borderWidth: 2, tension: 0.3, yAxisID: 'y1', fill: false }
-            ]
-        },
-        options: {
-            responsive: true,
-            interaction: { intersect: false },
-            scales: {
-                y: { type: 'linear', position: 'left', title: { display: true, text: 'Patrimônio (R$)' } },
-                y1: { type: 'linear', position: 'right', title: { display: true, text: 'Drawdown (%)' }, grid: { drawOnChartArea: false } },
-                x: { ticks: { maxRotation: 45 } }
-            },
-            plugins: { legend: { position: 'top' }, tooltip: { mode: 'index', intersect: false } }
-        }
-    });
-}
-
-function updatePatrimonioFilters(trades) {
-    const estrategias = [...new Set(trades.map(t => t.estrategia).filter(Boolean))];
-    const selectEstrat = document.getElementById('filter-estrategia');
-    selectEstrat.innerHTML = '<option value="">Todas as Estratégias</option>' + estrategias.map(e => `<option value="${e}">${e}</option>`).join('');
-
-    const ativos = [...new Set(trades.map(t => t.ativo).filter(Boolean))];
-    const selectAtivo = document.getElementById('filter-ativo');
-    selectAtivo.innerHTML = '<option value="">Todos os Ativos</option>' + ativos.map(a => `<option value="${a}">${a}</option>`).join('');
-}
-
-function resetPatrimonioFilters() {
-    document.getElementById('filter-estrategia').value = '';
-    document.getElementById('filter-ativo').value = '';
-    document.getElementById('filter-data-inicio').value = '';
-    document.getElementById('filter-data-fim').value = '';
-    renderAdvancedPatrimonioChart();
-}

@@ -35,29 +35,7 @@
             <input type="file" id="importFileInput" accept=".json" style="display:none;">
         </div>
     </div>
-    
-<!-- ==================== EVOLUÇÃO DO PATRIMÔNIO + DRAWDOWN ==================== -->
-<section class="patrimonio-section">
-    <div class="section-header">
-        <h2>📈 Evolução do Patrimônio + Drawdown</h2>
-        <div class="patrimonio-filters">
-            <select id="filter-estrategia" onchange="renderAdvancedPatrimonioChart()"></select>
-            <select id="filter-ativo" onchange="renderAdvancedPatrimonioChart()"></select>
-            <input type="date" id="filter-data-inicio" onchange="renderAdvancedPatrimonioChart()">
-            <input type="date" id="filter-data-fim" onchange="renderAdvancedPatrimonioChart()">
-            <button onclick="resetPatrimonioFilters()" class="btn-update">
-                <span class="icon">🔄</span> Limpar Filtros
-            </button>
-        </div>
-    </div>
-    <div class="charts-container-patrimonio">
-        <div class="chart-main">
-            <canvas id="equityDrawdownChart"></canvas>
-        </div>
-    </div>
-    <p class="patrimonio-footer">Curva de Equity (verde) + Drawdown Máximo (vermelho) | Atualiza automaticamente</p>
-</section>
-    
+
     <!-- Dashboard: Checklists + Notícias -->
     <div class="dashboard">
         <div class="checklists-accordion">
@@ -172,24 +150,19 @@
         </div>
     </div>
 
-    <!-- ==================== MONITOR DE AÇÕES ==================== -->
-<section class="stocks-section">
-    <div class="section-header">
-        <h2>📊 Principais Ações do Mini Índice (Ibovespa)</h2>
-        <button onclick="updateStocks()" class="btn-update">
-    <span class="icon">🔄</span>
-    Atualizar Agora
-</button>
+    <!-- Monitor de Ações do Mini Índice -->
+    <div class="stocks-section">
+        <div class="card">
+            <div class="card-header">
+                <h2>📊 Principais Ações do Mini Índice (Ibovespa)</h2>
+                <button id="refreshStocksBtn" class="small-btn" style="background:#1f5e7a; color:white;">🔄 Atualizar Agora</button>
+            </div>
+            <div class="card-body">
+                <div class="stocks-grid" id="stocksGrid"><div class="loading">Carregando cotações...</div></div>
+                <div class="update-info">Atualização automática a cada 60s | Dados: Yahoo Finance</div>
+            </div>
+        </div>
     </div>
-
-    <div id="stocksGrid" class="stocks-grid">
-        <!-- JS preenche aqui -->
-    </div>
-
-    <p class="stocks-footer">
-        Atualização automática a cada 90s | Dados: Yahoo Finance
-    </p>
-</section>
 
     <!-- Calendário Econômico (estático, mas editável) -->
     <div class="calendar-section">
