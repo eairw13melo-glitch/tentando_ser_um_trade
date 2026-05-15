@@ -242,20 +242,23 @@ function updatePerformanceChart() {
     });
 }
 
-// ==================== CALENDÁRIO ECONÔMICO (estático) ====================
+// ==================== CALENDÁRIO ECONÔMICO (atualizado maio/2026) ====================
 function loadEconomicCalendar() {
-    // Dados de exemplo (substituir por API futura)
+    // ✅ Dados atualizados em 15/05/2026
     const eventos = [
-        { data: "2025-04-17", pais: "EUA", evento: "Pedidos de auxílio-desemprego", impacto: "Alto" },
-        { data: "2025-04-18", pais: "Brasil", evento: "IPCA-15 (prévia da inflação)", impacto: "Alto" },
-        { data: "2025-04-20", pais: "China", evento: "Taxa de juros (LPR)", impacto: "Médio" },
-        { data: "2025-04-22", pais: "Zona do Euro", evento: "PMI Composto (flash)", impacto: "Alto" },
-        { data: "2025-04-23", pais: "EUA", evento: "FOMC - ata da última reunião", impacto: "Alto" },
-        { data: "2025-04-30", pais: "Brasil", evento: "Decisão Copom (Selic)", impacto: "Muito Alto" },
-        { data: "2025-05-02", pais: "EUA", evento: "Payroll (geração de empregos)", impacto: "Muito Alto" }
+        { data: "2026-05-19", pais: "Brasil", evento: "Boletim Focus (BCB)", impacto: "Médio" },
+        { data: "2026-05-20", pais: "EUA", evento: "Vendas no Varejo", impacto: "Alto" },
+        { data: "2026-05-21", pais: "Brasil", evento: "IPCA-15 (prévia inflação)", impacto: "Muito Alto" },
+        { data: "2026-05-27", pais: "EUA", evento: "Confiança do Consumidor (Conference Board)", impacto: "Médio" },
+        { data: "2026-05-28", pais: "Brasil", evento: "Balança Comercial", impacto: "Alto" },
+        { data: "2026-06-03", pais: "Brasil", evento: "PMI Industrial", impacto: "Médio" },
+        { data: "2026-06-04", pais: "EUA", evento: "Decisão FOMC (juros)", impacto: "Muito Alto" },
+        { data: "2026-06-10", pais: "Brasil", evento: "Decisão Copom (Selic)", impacto: "Muito Alto" }
     ];
+
     const container = document.getElementById('economicCalendar');
     if (!container) return;
+
     container.innerHTML = eventos.map(ev => `
         <div class="calendar-event">
             <span class="date">📅 ${ev.data}</span>
