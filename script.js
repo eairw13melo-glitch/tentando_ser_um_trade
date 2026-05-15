@@ -590,6 +590,65 @@ function refreshDashboard() {
     renderDashboard();
 }
 
+// ==================== CALCULADORA DE RISCO ====================
+function calculateRisk() {
+    const patrimonio = parseFloat(document.getElementById('calc-patrimonio').value) || 10000;
+    const riscoPct = parseFloat(document.getElementById('calc-risco').value) || 1;
+    const entrada = parseFloat(document.getElementById('calc-entrada').value) || 0;
+    const stopPontos = parseFloat(document.getElementById('calc-stop').value) || 0;
+    const multiplicador = parseFloat(document.getElementById('calc-multiplicador').value) || 0.20;
+    const rrDesejado = parseFloat(document.getElementById('calc-rr').value) || 2;
+
+    // Valor em risco
+    const valorRisco = patrimonio * (riscoPct / 100);
+
+    // Risco por contrato
+    const riscoPorContrato = stopPontos * multiplicador;
+
+    // Quantidade de contratos
+    let qtdContratos = riscoPorContrato > 0 ? Math.floor(valorRisco / riscoPorContrato) : 0;
+    if (qtdContratos < 1) qtdContratos = 1;
+
+    // Valor total da operação (para futuros)
+    const valorOperacao = qtdContratos * entrada * multiplicador; // aproximado para WIN
+
+    // Stop Loss em dinheiro
+    const stopDinheiro = qtdContratos * stopPontos * multiplicador;
+
+    // Take Profit sugerido
+    const tpDistancia = stopPontos * rrDesejado;
+    const tpPreco = entrada + (tpDistancia); // direção long (ajuste manual se short)
+
+    // Atualiza tela
+    document.getElementById('risco-valor').textContent = `R$ ${valorRisco.toFixed(2)}`;
+    document.getElementById('qtd-contratos').textContent = qtdContratos;
+    document.getElementById('valor-operacao').textContent = `R$ ${valorOperacao.toFixed(2)}`;
+    document.getElementById('stop-dinheiro').textContent = `-R$ ${stopDinheiro.toFixed(2)}`;
+    document.getElementById('tp-sugerido').textContent = `R$ ${tpPreco.toFixed(2)}`;
+}
+
+function usarNoTrade() {
+    const entrada = document.getElementById('calc-entrada').value;
+    const stop = parseFloat(document.getElementById('calc-entrada').value) - parseFloat(document.getElementById('calc-stop').value); // assume long
+
+    // Preenche o formulário do Diário de Trades
+    document.getElementById('trade-entrada').value = entrada;
+    document.getElementById('trade-stopLoss').value = stop.toFixed(2);
+    // você pode adicionar mais campos se quiser
+
+    alert('✅ Dados enviados para o formulário do Diário de Trades!\n\nAgora é só completar o resto e salvar.');
+    // rola até o diário
+    document.querySelector('#diario-section').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Inicializa a calculadora quando carregar
+function initRiskCalculator() {
+    // sincroniza patrimônio com o do site
+    const patrimonioAtual = localStorage.getItem('trader_patrimonio') || '10000';
+    document.getElementById('calc-patrimonio').value = patrimonioAtual;
+    calculateRisk();
+}
+
 // ==================== ACCORDION ====================
 function initAccordion() {
     const headers = document.querySelectorAll('.accordion-header');
