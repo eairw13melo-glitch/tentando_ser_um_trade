@@ -768,3 +768,87 @@ function startStockUpdater() {
     if (stockInterval) clearInterval(stockInterval);
     stockInterval = setInterval(updateStocks, 90000);
 }
+
+// ==================== GRÁFICO AVANÇADO DE PATRIMÔNIO + DRAWDOWN ====================
+let equityChartInstance = null;
+
+function renderAdvancedPatrimonioChart() {
+    const trades = JSON.parse(localStorage.getItem('trader_diary_trades')) || [];
+    if (trades.length === 0) return;
+
+    const filterEstrategia = document.getElementById('filter-estrategia').value;
+    const filterAtivo = document.getElementById('filter-ativo').value;
+    const dataInicio = document.getElementById('filter-data-inicio').value;
+    const dataFim = document.getElementById('filter-data-fim').value;
+
+    let filteredTrades = trades.filter(trade => {
+        const date = new Date(trade.data);
+        const matchEstrategia = !filterEstrategia || trade.estrategia === filterEstrategia;
+        const matchAtivo = !filterAtivo || trade.ativo === filterAtivo;
+        const matchData = (!dataInicio || date >= new Date(dataInicio)) && (!dataFim || date <= new Date(dataFim));
+        return matchEstrategia && matchAtivo && matchData;
+    });
+
+    filteredTrades.sort((a, b) => new Date(a.data) - new Date(b.data));
+
+    let equity = parseFloat(localStorage.getItem('trader_patrimonio')) || 10000;
+    let maxEquity = equity;
+    const equityData = [];
+    const drawdownData = [];
+    const labels = [];
+
+    filteredTrades.forEach(trade => {
+        const pnl = parseFloat(trade.resultado || 0);
+        equity += pnl;
+        labels.push(new Date(trade.data).toLocaleDateString('pt-BR'));
+        if (equity > maxEquity) maxEquity = equity;
+        const dd = ((maxEquity - equity) / maxEquity) * 100;
+        equityData.push(equity);
+        drawdownData.push(-dd);
+    });
+
+    updatePatrimonioFilters(trades);
+
+    const ctx = document.getElementById('equityDrawdownChart');
+    if (!ctx) return;
+    if (equityChartInstance) equityChartInstance.destroy();
+
+    equityChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                { label: 'Equity (R$)', data: equityData, borderColor: '#22c55e', backgroundColor: 'rgba(34, 197, 94, 0.1)', borderWidth: 3, tension: 0.3, yAxisID: 'y' },
+                { label: 'Drawdown (%)', data: drawdownData, borderColor: '#ef4444', borderWidth: 2, tension: 0.3, yAxisID: 'y1', fill: false }
+            ]
+        },
+        options: {
+            responsive: true,
+            interaction: { intersect: false },
+            scales: {
+                y: { type: 'linear', position: 'left', title: { display: true, text: 'Patrimônio (R$)' } },
+                y1: { type: 'linear', position: 'right', title: { display: true, text: 'Drawdown (%)' }, grid: { drawOnChartArea: false } },
+                x: { ticks: { maxRotation: 45 } }
+            },
+            plugins: { legend: { position: 'top' }, tooltip: { mode: 'index', intersect: false } }
+        }
+    });
+}
+
+function updatePatrimonioFilters(trades) {
+    const estrategias = [...new Set(trades.map(t => t.estrategia).filter(Boolean))];
+    const selectEstrat = document.getElementById('filter-estrategia');
+    selectEstrat.innerHTML = '<option value="">Todas as Estratégias</option>' + estrategias.map(e => `<option value="${e}">${e}</option>`).join('');
+
+    const ativos = [...new Set(trades.map(t => t.ativo).filter(Boolean))];
+    const selectAtivo = document.getElementById('filter-ativo');
+    selectAtivo.innerHTML = '<option value="">Todos os Ativos</option>' + ativos.map(a => `<option value="${a}">${a}</option>`).join('');
+}
+
+function resetPatrimonioFilters() {
+    document.getElementById('filter-estrategia').value = '';
+    document.getElementById('filter-ativo').value = '';
+    document.getElementById('filter-data-inicio').value = '';
+    document.getElementById('filter-data-fim').value = '';
+    renderAdvancedPatrimonioChart();
+}
