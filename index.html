@@ -36,6 +36,36 @@
         </div>
     </div>
 
+    <!-- ==================== DASHBOARD DE ESTATÍSTICAS ==================== -->
+<section class="dashboard-section">
+    <div class="section-header">
+        <h2>📊 Dashboard de Estatísticas</h2>
+        <button onclick="refreshDashboard()" class="btn-update">
+            <span class="icon">🔄</span> Atualizar Dashboard
+        </button>
+    </div>
+
+    <div class="stats-grid">
+        <!-- Cards gerados pelo JS -->
+    </div>
+
+    <div class="charts-container">
+        <div class="chart-box">
+            <h3>Performance Mensal</h3>
+            <canvas id="monthlyPerformanceChart"></canvas>
+        </div>
+        <div class="chart-box">
+            <h3>Winrate por Estratégia</h3>
+            <canvas id="strategyWinrateChart"></canvas>
+        </div>
+    </div>
+
+    <div class="breakdown">
+        <h3>Detalhes por Ativo e Dia da Semana</h3>
+        <div id="breakdownTable"></div>
+    </div>
+</section>
+    
     <!-- Dashboard: Checklists + Notícias -->
     <div class="dashboard">
         <div class="checklists-accordion">
