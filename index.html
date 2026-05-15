@@ -35,7 +35,29 @@
             <input type="file" id="importFileInput" accept=".json" style="display:none;">
         </div>
     </div>
-
+    
+<!-- ==================== EVOLUÇÃO DO PATRIMÔNIO + DRAWDOWN ==================== -->
+<section class="patrimonio-section">
+    <div class="section-header">
+        <h2>📈 Evolução do Patrimônio + Drawdown</h2>
+        <div class="patrimonio-filters">
+            <select id="filter-estrategia" onchange="renderAdvancedPatrimonioChart()"></select>
+            <select id="filter-ativo" onchange="renderAdvancedPatrimonioChart()"></select>
+            <input type="date" id="filter-data-inicio" onchange="renderAdvancedPatrimonioChart()">
+            <input type="date" id="filter-data-fim" onchange="renderAdvancedPatrimonioChart()">
+            <button onclick="resetPatrimonioFilters()" class="btn-update">
+                <span class="icon">🔄</span> Limpar Filtros
+            </button>
+        </div>
+    </div>
+    <div class="charts-container-patrimonio">
+        <div class="chart-main">
+            <canvas id="equityDrawdownChart"></canvas>
+        </div>
+    </div>
+    <p class="patrimonio-footer">Curva de Equity (verde) + Drawdown Máximo (vermelho) | Atualiza automaticamente</p>
+</section>
+    
     <!-- Dashboard: Checklists + Notícias -->
     <div class="dashboard">
         <div class="checklists-accordion">
