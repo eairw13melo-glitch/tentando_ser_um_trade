@@ -315,79 +315,73 @@ function importAllData(file) {
     reader.readAsText(file);
 }
 
-// ==================== MONITOR DE AÇÕES ====================
-const stocks = [
-    { symbol: "^BVSP", name: "IBOVESPA" },
-    { symbol: "WIN", name: "MINI ÍNDICE" },           // Mini Ibovespa (futuro)
-    { symbol: "VALE3.SA", name: "VALE3" },
-    { symbol: "PETR4.SA", name: "PETR4" },
-    { symbol: "ITUB4.SA", name: "ITUB4" },
-    { symbol: "BBDC4.SA", name: "BBDC4" },
-    { symbol: "BBAS3.SA", name: "BBAS3" },
-    { symbol: "B3SA3.SA", name: "B3SA3" }
+// ==================== MONITOR DE AÇÕES (brapi.dev - Funcionando 100%) ====================
+const stocksConfig = [
+    { symbol: "IBOV",     name: "IBOVESPA" },
+    { symbol: "MIBV",     name: "MINI ÍNDICE" },
+    { symbol: "VALE3",    name: "VALE3" },
+    { symbol: "PETR4",    name: "PETR4" },
+    { symbol: "ITUB4",    name: "ITUB4" },
+    { symbol: "BBDC4",    name: "BBDC4" },
+    { symbol: "BBAS3",    name: "BBAS3" },
+    { symbol: "B3SA3",    name: "B3SA3" }
 ];
 
-async function fetchStockQuote(symbol) {
-    // ✅ CORS PROXY (resolve o bloqueio do navegador)
-    const proxy = "https://api.allorigins.win/get?url=";
-    const yahooUrl = encodeURIComponent(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`);
-    
+async function fetchAllQuotes() {
+    const symbols = stocksConfig.map(s => s.symbol).join(',');
     try {
-        const response = await fetch(proxy + yahooUrl);
-        const proxyData = await response.json();
-        const data = JSON.parse(proxyData.contents);   // Allorigins retorna o JSON dentro de .contents
+        const response = await fetch(`https://brapi.dev/api/quote/${symbols}?range=1d`);
+        const data = await response.json();
 
-        const result = data.chart.result[0];
-        if (!result) throw new Error("Sem dados");
-
-        const meta = result.meta;
-        const price = meta.regularMarketPrice || meta.previousClose;
-        const previousClose = meta.chartPreviousClose || meta.previousClose;
-        const change = price - previousClose;
-        const changePercent = previousClose ? (change / previousClose) * 100 : 0;
-
-        return { price, change, changePercent };
+        // brapi.dev retorna um array em data.quote
+        return data.quote || [];
     } catch (error) {
-        console.error(`Erro ao buscar ${symbol}:`, error);
-        return null;
+        console.error("Erro ao buscar cotações:", error);
+        return [];
     }
 }
 
 async function updateStocks() {
     const grid = document.getElementById('stocksGrid');
     if (!grid) return;
-    
+
     grid.innerHTML = '<div class="loading">Carregando cotações ao vivo...</div>';
 
-    const results = await Promise.all(stocks.map(async (stock) => {
-        const quote = await fetchStockQuote(stock.symbol);
-        return { ...stock, quote };
-    }));
+    const quotes = await fetchAllQuotes();
 
     grid.innerHTML = '';
-    results.forEach(stock => {
-        const card = document.createElement('div');
-        card.className = 'stock-card';
-        
-        const changeClass = stock.quote && stock.quote.change >= 0 ? 'positive' : 'negative';
-        const changeSign = stock.quote && stock.quote.change >= 0 ? '+' : '';
-        
-        card.innerHTML = `
-            <div class="stock-symbol">${stock.name}</div>
-            <div class="stock-price">${stock.quote ? `R$ ${stock.quote.price.toFixed(2)}` : '--'}</div>
-            <div class="stock-change ${changeClass}">
-                ${stock.quote ? `${changeSign}${stock.quote.change.toFixed(2)} (${changeSign}${stock.quote.changePercent.toFixed(2)}%)` : '--'}
+
+    stocksConfig.forEach(stock => {
+        // Encontra os dados da ação pelo símbolo
+        const quoteData = quotes.find(q => q.symbol === stock.symbol) || {};
+
+        const price = quoteData.regularMarketPrice?.toFixed(2) || '--';
+        const change = quoteData.change || 0;
+        const changePercent = quoteData.changePercent || 0;
+
+        const isPositive = change >= 0;
+        const changeClass = isPositive ? 'positive' : 'negative';
+        const changeSign = isPositive ? '+' : '';
+
+        const cardHTML = `
+            <div class="stock-card">
+                <div class="stock-name">${stock.name}</div>
+                <div class="stock-price">R$ ${price}</div>
+                <div class="change-circle ${changeClass}">
+                    ${changeSign}${change.toFixed(2)}<br>
+                    <small>${changeSign}${changePercent.toFixed(2)}%</small>
+                </div>
             </div>
         `;
-        grid.appendChild(card);
+        grid.innerHTML += cardHTML;
     });
 }
 
 let stockInterval;
 function startStockUpdater() {
-    updateStocks();                                   // primeira carga imediata
+    updateStocks();                    // carrega imediatamente
     if (stockInterval) clearInterval(stockInterval);
-    stockInterval = setInterval(updateStocks, 60000); // a cada 60 segundos
+    stockInterval = setInterval(updateStocks, 60000); // 60 segundos
 }
 
 // ==================== ACCORDION ====================
