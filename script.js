@@ -687,6 +687,7 @@ function init() {
     startStockUpdater();
     loadEconomicCalendar();
     initRiskCalculator();
+    renderAdvancedPatrimonioChart();
     document.getElementById('editarPatrimonioBtn')?.addEventListener('click', editarPatrimonio);
     document.getElementById('addStopBtn')?.addEventListener('click', addStop);
     document.getElementById('resetStopsBtn')?.addEventListener('click', resetStops);
