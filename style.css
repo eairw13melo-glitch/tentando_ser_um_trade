@@ -427,3 +427,28 @@ button:hover { transform: scale(0.97); }
     font-size: 1.4rem;
     color: #e2e8f0;
 }
+/* ==================== TÍTULO DA SEÇÃO DE AÇÕES - VISIBILIDADE 100% ==================== */
+.stocks-section .section-header h2 {
+    color: #ffffff !important;           /* Branco puro */
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-shadow: 0 0 8px rgba(0, 212, 255, 0.6);   /* Glow neon (fica lindo no trading) */
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.stocks-section .section-header h2::before {
+    content: "📊";
+    font-size: 1.6rem;
+}
+
+/* Garante que o header inteiro tenha fundo escuro */
+.stocks-section .section-header {
+    background: rgba(15, 23, 42, 0.95);
+    padding: 16px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
