@@ -380,3 +380,89 @@ footer {
     .info-bar { flex-direction: column; }
     .card-body { padding: 16px; }
 }
+
+/* HORÁRIOS DOS MERCADOS - VERSÃO LIVE */
+.market-timeline-live {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.market-row-live {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.market-row-live:last-child {
+    border-bottom: none;
+}
+
+.market-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 160px;
+}
+
+.flag {
+    font-size: 1.4rem;
+}
+
+.market-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 110px;
+}
+
+.live-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse 2s infinite;
+}
+
+.live-open { background: #1e7e5e; }
+.live-closed { background: #94a3b8; animation: none; }
+
+.status-text {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.live-open + .status-text { color: #1e7e5e; }
+.live-closed + .status-text { color: #64748b; }
+
+.bar-container-live {
+    flex: 1;
+    height: 10px;
+    background: #e2e8f0;
+    border-radius: 9999px;
+    position: relative;
+    overflow: hidden;
+}
+
+.bar-live {
+    height: 100%;
+    background: linear-gradient(90deg, #1e7e5e, #34d399);
+    border-radius: 9999px;
+    transition: width 0.4s ease;
+}
+
+.market-hours-live {
+    font-size: 0.8rem;
+    font-family: monospace;
+    color: #64748b;
+    width: 90px;
+    text-align: right;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
