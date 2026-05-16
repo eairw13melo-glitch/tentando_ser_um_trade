@@ -1,68 +1,89 @@
 # 📋📓 Diário do Trader Consistente
 
-**Sua ferramenta completa para trading disciplinado e consistente.**
+**A ferramenta mais completa para quem quer se tornar um trader disciplinado e consistente.**
 
-Uma aplicação web que une **checklist diária de psicologia e processo** com um **diário de trades profissional**. Desenvolvida com base nos melhores conceitos de psicologia do trading, gestão de risco e melhoria contínua.
+Uma aplicação web que combina **checklist psicológica diária** com um **diário de trades profissional**, tudo em um único lugar. Desenvolvida com base em psicologia do trading, gestão de risco e revisão sistemática.
 
-![Status](https://img.shields.io/badge/status-ativo-brightgreen)
+![Status](https://img.shields.io/badge/status-em%20desenvolvimento-brightgreen)
 ![Licença](https://img.shields.io/badge/licença-MIT-blue)
-![Tecnologia](https://img.shields.io/badge/tech-HTML%2FCSS%2FJS-vanilla-orange)
+![Tecnologia](https://img.shields.io/badge/tech-HTML%2FCSS%2FJS%20Vanilla-orange)
+![GitHub](https://img.shields.io/github/stars/eairw13melo-glitch/tentando_ser_um_trade?style=social)
+
+---
 
 ## ✨ Principais Funcionalidades
 
-### ✅ Checklist de Disciplina (5 pilares)
-- **Mental e Pré-Abertura** – Preparação psicológica e plano do dia  
-- **Gestão de Risco e Limites Diários** – Controle rigoroso de perda máxima  
-- **Durante o Pregão** – Controle de impulso e execução do plano  
-- **Pós-Mercado** – Revisão, aprendizado e melhoria contínua  
-- **Regras de Ouro** – Princípios fundamentais de disciplina
+### ✅ Checklist de Disciplina (5 Pilares)
+- **Mental & Pré-Abertura** – Preparação psicológica e plano do dia
+- **Gestão de Risco & Limites** – Controle rigoroso de perda máxima
+- **Durante o Pregão** – Controle de impulso e execução
+- **Pós-Mercado** – Revisão honesta e aprendizado
+- **Regras de Ouro** – Princípios inegociáveis
 
-### 📔 Diário de Trades Completo
-- Registro detalhado de cada operação (ativo, direção, entrada, saída, stop, take profit)  
-- **Cálculo automático** de P&L (resultado financeiro)  
-- Risco assumido em % do capital  
-- Estratégia utilizada e avaliação de execução (seguiu o plano?)  
-- Observações técnicas e emocionais  
-- Edição, exclusão e busca de trades  
-- Persistência automática via `localStorage`
+### 📔 Diário de Trades Profissional
+- Registro completo de cada operação
+- Cálculo automático de P&L, % de risco e resultado
+- Avaliação de execução (Seguiu o plano? Sim/Não)
+- Observações técnicas e emocionais
+- Edição, exclusão, busca e filtro
+- Persistência automática (`localStorage`)
 
-### 🛑 Controle Inteligente de Stops
-- Contador de stops diários (limite configurável)  
-- Bloqueio automático do checklist quando o limite é atingido  
-- Reforço psicológico para preservar o capital
+### 🛑 Stop Loss Diário Inteligente
+- Contador de stops atingidos
+- Bloqueio automático quando o limite diário é alcançado
+- Reforço psicológico forte contra tilt
 
 ### 🔄 Recursos Extras
-- Reset seletivo do dia (mantém o histórico de trades)  
-- Exportação completa para **CSV** (análise no Excel/Google Sheets)  
-- Interface moderna, limpa e totalmente responsiva
+- Reset do dia (mantém histórico)
+- Exportação para CSV
+- Interface 100% responsiva e moderna
+- Modo Dark/Light (em breve)
+
+---
 
 ## 🚀 Como Usar
 
-1. Acesse o site  
-2. Preencha o **checklist matinal** antes do pregão  
-3. Registre cada trade durante o dia com todos os detalhes  
-4. Ao final do pregão, complete o checklist pós-mercado  
+1. Abra o site todas as manhãs
+2. Complete o **checklist pré-abertura**
+3. Registre seus trades durante o pregão
+4. Faça a revisão **pós-mercado**
 5. Analise seu desempenho e evolua
 
-## 🎯 Roadmap – Próximas Funcionalidades
+---
 
-- [ ] Dashboard com estatísticas (Win Rate, Expectancy, Drawdown, P&L mensal)  
-- [ ] Gráficos interativos (Equity Curve, distribuição por ativo/estratégia/horário)  
-- [ ] Filtros avançados e busca no diário  
-- [ ] Tema Dark Mode automático  
-- [ ] Importação de trades via CSV  
-- [ ] Relatório diário em PDF  
-- [ ] Histórico mensal/anual  
-- [ ] Suporte a múltiplas contas/corretoras
+## 🎯 Roadmap (Priorizado)
+
+### **Próxima Versão (v1.1)**
+- [ ] Dashboard com estatísticas principais (Win Rate, Expectancy, P&L)
+- [ ] Gráficos interativos (Chart.js)
+- [ ] Filtros avançados no diário
+
+### **Futuro**
+- [ ] Tema Dark Mode automático
+- [ ] Importação de trades (CSV)
+- [ ] Relatório PDF diário/mensal
+- [ ] Histórico por mês/ano
+- [ ] Múltiplas contas
+
+---
 
 ## 🛠️ Tecnologias
 
-- HTML5, CSS3 (Flexbox + Grid + Responsivo)  
-- JavaScript Vanilla (sem frameworks)  
-- LocalStorage para persistência total dos dados
+- HTML5, CSS3 (Flexbox + CSS Grid)
+- JavaScript Vanilla
+- Chart.js
+- LocalStorage
 
 ## 📸 Demonstração
 
-*(Em breve – posso gerar prints profissionais da interface para você)*
+*(Em breve – vou gerar imagens profissionais da interface atual para colocarmos aqui)*
 
 ## 📁 Estrutura do Projeto
+
+```bash
+tentando_ser_um_trade/
+├── index.html
+├── style.css
+├── script.js
+├── README.md
+└── assets/          # (vamos criar)
