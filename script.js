@@ -503,58 +503,68 @@ function getCurrentHourDecimal() {
     return (utc - 3 + 24) % 24; // converte para GMT-3
 }
 
+// ==================== HORÁRIOS DOS MERCADOS - ESTILO MAPA MUNDI ====================
+const marketsData = [
+    { name: "Sydney",       flag: "🇦🇺", color: "#10b981", open: 17, close: 1,   hours: "17:00 - 01:00" },
+    { name: "Tóquio",       flag: "🇯🇵", color: "#ef4444", open: 21, close: 6,   hours: "21:00 - 06:00" },
+    { name: "Londres",      flag: "🇬🇧", color: "#f59e0b", open: 5,  close: 13.5, hours: "05:00 - 13:30" },
+    { name: "Nova York",    flag: "🇺🇸", color: "#3b82f6", open: 10.5, close: 17, hours: "10:30 - 17:00" },
+    { name: "B3 - Brasil",  flag: "🇧🇷", color: "#22c55e", open: 10,  close: 17.9167, hours: "10:00 - 17:55" }
+];
+
+function getCurrentHourGMT3() {
+    const now = new Date();
+    let hour = now.getUTCHours() - 3;
+    if (hour < 0) hour += 24;
+    return hour + (now.getUTCMinutes() / 60);
+}
+
 function renderMarketsTimeline() {
     const container = document.getElementById('marketsTimeline');
     if (!container) return;
 
-    const currentHour = getCurrentHourDecimal();
-    let html = `<div class="market-timeline-live">`;
+    const currentHour = getCurrentHourGMT3();
+    let html = `<div class="timeline-axis">`;
+    
+    // Eixo de tempo
+    for (let i = 0; i <= 24; i++) {
+        html += `<span>${i.toString().padStart(2, '0')}</span>`;
+    }
+    html += `</div>`;
 
     marketsData.forEach(market => {
-        let isOpen = false;
-        let progress = 0;
+        const isOpen = (currentHour >= market.open && currentHour < market.close) ||
+                       (market.close < market.open && (currentHour >= market.open || currentHour < market.close));
 
-        if (market.overnight) {
-            // Mercado que cruza a meia-noite (ex: Tóquio)
-            isOpen = currentHour >= market.openHour || currentHour < market.closeHour;
-        } else {
-            isOpen = currentHour >= market.openHour && currentHour < market.closeHour;
-        }
+        const barLeft = (market.open / 24) * 100;
+        let barWidth = ((market.close - market.open) / 24) * 100;
+        if (barWidth < 0) barWidth += 100; // para mercados que cruzam meia-noite
 
-        if (isOpen) {
-            const sessionLength = market.closeHour - market.openHour;
-            const elapsed = currentHour - market.openHour;
-            progress = Math.min(Math.max((elapsed / sessionLength) * 100, 0), 100);
-        }
-
-        const statusClass = isOpen ? 'live-open' : 'live-closed';
-        const statusText = isOpen ? 'ABERTO AGORA' : 'Fechado';
+        const currentPosition = (currentHour / 24) * 100;
 
         html += `
-        <div class="market-row-live">
-            <div class="market-info">
+        <div class="market-bar-row">
+            <div class="market-name">
                 <span class="flag">${market.flag}</span>
-                <strong>${market.name}</strong>
+                ${market.name}
             </div>
-            <div class="market-status">
-                <span class="live-dot ${statusClass}"></span>
-                <span class="status-text">${statusText}</span>
+            <div class="bar-wrapper">
+                <div class="bar" style="left: ${barLeft}%; width: ${barWidth}%; background: ${market.color};"></div>
+                ${isOpen ? `<div class="current-time-line" style="left: ${currentPosition}%"></div>` : ''}
             </div>
-            <div class="bar-container-live">
-                <div class="bar-live ${isOpen ? 'bar-open' : ''}" style="width: ${progress}%"></div>
+            <div class="market-hours">
+                <span class="status-live ${isOpen ? 'open' : 'closed'}">
+                    ${isOpen ? 'ABERTO' : 'FECHADO'}
+                </span>
+                <small style="margin-left:8px;">${market.hours}</small>
             </div>
-            <div class="market-hours-live">${market.hours}</div>
         </div>`;
     });
 
-    html += `</div>`;
     container.innerHTML = html;
 }
 
-// Atualiza a cada 60 segundos
-let marketInterval;
 function startMarketsUpdater() {
     renderMarketsTimeline();
-    if (marketInterval) clearInterval(marketInterval);
-    marketInterval = setInterval(renderMarketsTimeline, 60000);
+    setInterval(renderMarketsTimeline, 60000); // atualiza a cada 1 minuto
 }
