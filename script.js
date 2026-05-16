@@ -557,14 +557,94 @@ function init() {
 
 window.onload = init;
 
-// ==================== HORÁRIOS DOS MERCADOS ====================
-const marketsData = [
-    { name: "Sydney",       flag: "🇦🇺", color: "#10b981", open: 17, close: 1,   hours: "17:00 - 01:00" },
-    { name: "Tóquio",       flag: "🇯🇵", color: "#ef4444", open: 21, close: 6,   hours: "21:00 - 06:00" },
-    { name: "Londres",      flag: "🇬🇧", color: "#f59e0b", open: 5,  close: 13.5, hours: "05:00 - 13:30" },
-    { name: "Nova York",    flag: "🇺🇸", color: "#3b82f6", open: 10.5, close: 17, hours: "10:30 - 17:00" },
-    { name: "B3 - Brasil",  flag: "🇧🇷", color: "#22c55e", open: 10,  close: 17.9167, hours: "10:00 - 17:55" }
+// ==================== RELÓGIO CIRCULAR DE MERCADOS (GMT-3) ====================
+const marketsClockData = [
+    { name: "Sydney",       open: 17, close: 1,   color: "#10b981", flag: "🇦🇺" },
+    { name: "Tóquio",       open: 21, close: 6,   color: "#ef4444", flag: "🇯🇵" },
+    { name: "Hong Kong",    open: 22, close: 6,   color: "#eab308", flag: "🇭🇰" },
+    { name: "Londres",      open: 5,  close: 13.5, color: "#3b82f6", flag: "🇬🇧" },
+    { name: "Nova York",    open: 10.5, close: 17, color: "#8b5cf6", flag: "🇺🇸" },
+    { name: "B3 Brasil",    open: 10, close: 17.9167, color: "#22c55e", flag: "🇧🇷" }
 ];
+
+function degreesToRadians(deg) {
+    return (deg * Math.PI) / 180;
+}
+
+function renderMarketClock() {
+    const container = document.getElementById('marketClock');
+    if (!container) return;
+
+    const currentHour = getCurrentHourGMT3();
+    const currentAngle = (currentHour / 24) * 360;
+
+    let html = `
+        <div class="clock-face">
+            <div class="clock-hour-marks"></div>
+            
+            <!-- Arcos dos mercados -->
+    `;
+
+    marketsClockData.forEach((market, index) => {
+        const startAngle = (market.open / 24) * 360;
+        let endAngle = (market.close / 24) * 360;
+        if (endAngle < startAngle) endAngle += 360;
+
+        const isOpen = (currentHour >= market.open && currentHour < market.close) ||
+                       (market.close < market.open && (currentHour >= market.open || currentHour < market.close));
+
+        const radius = 110 + (index * 28);
+        const strokeWidth = 26;
+
+        html += `
+            <svg class="market-arc-svg" width="320" height="320" style="position:absolute; left:0; top:0;">
+                <circle 
+                    cx="160" cy="160" r="${radius}"
+                    fill="none"
+                    stroke="${market.color}"
+                    stroke-width="${strokeWidth}"
+                    stroke-dasharray="${(endAngle - startAngle) * 2.8} ${360 * 2.8}"
+                    stroke-dashoffset="${-startAngle * 2.8}"
+                    stroke-linecap="round"
+                    opacity="${isOpen ? '0.95' : '0.35'}"
+                />
+            </svg>
+        `;
+    });
+
+    html += `
+            <!-- Marcas de hora -->
+            ${Array.from({length: 24}, (_, i) => {
+                const angle = (i / 24) * 360;
+                return `<div class="hour-mark" style="transform: rotate(${angle}deg);"></div>`;
+            }).join('')}
+            
+            <!-- Labels dos mercados -->
+    `;
+
+    marketsClockData.forEach((market, index) => {
+        const midHour = (market.open + (market.close - market.open) / 2) % 24;
+        const angle = (midHour / 24) * 360 - 90;
+        const rad = degreesToRadians(angle);
+        const x = 160 + Math.cos(rad) * 155;
+        const y = 160 + Math.sin(rad) * 155;
+
+        html += `
+            <div class="market-name-label" style="left: ${x - 55}px; top: ${y - 18}px;">
+                ${market.flag} ${market.name}
+            </div>
+        `;
+    });
+
+    html += `
+            <!-- Ponteiro da hora atual -->
+            <div class="current-time-hand" style="transform: rotate(${currentAngle}deg);"></div>
+            <div class="clock-center"></div>
+        </div>
+    `;
+
+    container.innerHTML = html;
+}
 
 function getCurrentHourGMT3() {
     const now = new Date();
@@ -573,50 +653,10 @@ function getCurrentHourGMT3() {
     return hour + (now.getUTCMinutes() / 60);
 }
 
-function renderMarketsTimeline() {
-    const container = document.getElementById('marketsTimeline');
-    if (!container) return;
-
-    const currentHour = getCurrentHourGMT3();
-    let html = `<div class="timeline-axis">`;
-    for (let i = 0; i <= 24; i++) {
-        html += `<span>${i.toString().padStart(2, '0')}</span>`;
-    }
-    html += `</div>`;
-
-    marketsData.forEach(market => {
-        const isOpen = (currentHour >= market.open && currentHour < market.close) ||
-                       (market.close < market.open && (currentHour >= market.open || currentHour < market.close));
-
-        const barLeft = (market.open / 24) * 100;
-        let barWidth = ((market.close - market.open) / 24) * 100;
-        if (barWidth < 0) barWidth += 100;
-
-        const currentPosition = (currentHour / 24) * 100;
-
-        html += `
-        <div class="market-bar-row">
-            <div class="market-name">
-                <span class="flag">${market.flag}</span>
-                ${market.name}
-            </div>
-            <div class="bar-wrapper">
-                <div class="bar" style="left: ${barLeft}%; width: ${barWidth}%; background: ${market.color};"></div>
-                ${isOpen ? `<div class="current-time-line" style="left: ${currentPosition}%"></div>` : ''}
-            </div>
-            <div class="market-hours">
-                <span class="status-live ${isOpen ? 'open' : 'closed'}">
-                    ${isOpen ? 'ABERTO' : 'FECHADO'}
-                </span>
-                <small style="margin-left:8px;">${market.hours}</small>
-            </div>
-        </div>`;
-    });
-
-    container.innerHTML = html;
-}
-
 function startMarketsUpdater() {
-    renderMarketsTimeline();
-    setInterval(renderMarketsTimeline, 60000);
+    renderMarketClock();
+    setInterval(renderMarketClock, 60000); // Atualiza a cada minuto
 }
+
+// Event listener para o botão de refresh
+document.getElementById('refreshMarketsBtn')?.addEventListener('click', renderMarketClock);
