@@ -400,7 +400,8 @@ function init() {
     initAccordion();
     startStockUpdater();
     loadEconomicCalendar();
-
+    startMarketsUpdater();
+    
     // Event listeners
     document.getElementById('editarPatrimonioBtn')?.addEventListener('click', editarPatrimonio);
     document.getElementById('addStopBtn')?.addEventListener('click', addStop);
