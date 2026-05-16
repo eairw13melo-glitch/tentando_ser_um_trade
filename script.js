@@ -23,7 +23,9 @@ function loadCheckboxes() {
         if (cb) {
             const saved = localStorage.getItem(`chk_${id}`);
             cb.checked = saved === 'true';
-            cb.addEventListener('change', () => localStorage.setItem(`chk_${id}`, cb.checked));
+            cb.addEventListener('change', () => {
+                localStorage.setItem(`chk_${id}`, cb.checked);
+            });
         }
     });
 }
@@ -237,7 +239,20 @@ function getFormTrade() {
         resultado = calculatePnL(entrada, saida, tipo);
     }
 
-    return { data, ativo, tipo, entrada, saida, stopLoss, takeProfit, riscoPercent, estrategia, riskRule, notas, resultado };
+    return { 
+        data, 
+        ativo, 
+        tipo, 
+        entrada, 
+        saida, 
+        stopLoss, 
+        takeProfit, 
+        riscoPercent, 
+        estrategia, 
+        riskRule, 
+        notas, 
+        resultado 
+    };
 }
 
 function clearForm() {
@@ -359,13 +374,103 @@ function updatePerformanceChart() {
     });
 }
 
-// ==================== OUTRAS FUNÇÕES (mantidas e otimizadas) ====================
-function loadEconomicCalendar() { /* ... mesmo código que você já tinha ... */ }
-function exportAllData() { /* ... mesmo código ... */ }
-function importAllData(file) { /* ... mesmo código ... */ }
-async function updateStocks() { /* ... mesmo código ... */ }
-function startStockUpdater() { /* ... mesmo código ... */ }
+// ==================== BACKUP (EXPORT / IMPORT) ====================
+function exportAllData() {
+    const backup = {
+        patrimonio: patrimonio,
+        dailyStopCount: dailyStopCount,
+        checkboxes: {},
+        trades: trades,
+        ativosList: ativosList,
+        exportDate: new Date().toISOString()
+    };
 
+    allCheckboxIds.forEach(id => {
+        const cb = document.getElementById(id);
+        if (cb) backup.checkboxes[id] = cb.checked;
+    });
+
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `backup_diario_trade_${new Date().toISOString().slice(0,10)}.json`;
+    link.click();
+}
+
+function importAllData(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const backup = JSON.parse(e.target.result);
+            
+            if (backup.patrimonio) {
+                patrimonio = backup.patrimonio;
+                updatePatrimonioDisplay();
+            }
+            if (backup.dailyStopCount !== undefined) {
+                dailyStopCount = backup.dailyStopCount;
+                updateStopDisplay();
+                enforceStopLimitUI();
+            }
+            if (backup.trades) {
+                trades = backup.trades;
+                saveTrades();
+            }
+            if (backup.ativosList) {
+                ativosList = backup.ativosList;
+                updateDatalist();
+            }
+            if (backup.checkboxes) {
+                Object.keys(backup.checkboxes).forEach(id => {
+                    const cb = document.getElementById(id);
+                    if (cb) {
+                        cb.checked = backup.checkboxes[id];
+                        localStorage.setItem(`chk_${id}`, cb.checked);
+                    }
+                });
+            }
+            alert("✅ Backup importado com sucesso!");
+        } catch (err) {
+            alert("❌ Erro ao importar backup: arquivo inválido.");
+        }
+    };
+    reader.readAsText(file);
+}
+
+// ==================== MINI ÍNDICE - COTAÇÕES (Simulado) ====================
+async function updateStocks() {
+    const grid = document.getElementById('stocksGrid');
+    if (!grid) return;
+    
+    grid.innerHTML = `
+        <div class="stock-item">WINJ26 <span class="positive">+0.85%</span></div>
+        <div class="stock-item">INDO26 <span class="negative">-0.32%</span></div>
+        <div class="stock-item">PETR4 <span class="positive">+1.24%</span></div>
+        <div class="stock-item">VALE3 <span class="positive">+0.67%</span></div>
+    `;
+}
+
+function startStockUpdater() {
+    updateStocks();
+    setInterval(updateStocks, 30000);
+}
+
+// ==================== CALENDÁRIO ECONÔMICO (Simulado) ====================
+function loadEconomicCalendar() {
+    const container = document.getElementById('economicCalendar');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="calendar-item">
+            <strong>10:00</strong> - PMI Industrial (USA)
+        </div>
+        <div class="calendar-item">
+            <strong>11:30</strong> - Decisão de Juros (Bacen)
+        </div>
+    `;
+}
+
+// ==================== ACCORDION ====================
 function initAccordion() {
     document.querySelectorAll('.accordion-header').forEach(header => {
         header.addEventListener('click', () => {
@@ -439,9 +544,12 @@ function init() {
     document.getElementById('exitPrice')?.addEventListener('input', updatePnL);
     document.getElementById('tradeType')?.addEventListener('change', updatePnL);
 
-    // Import
+    // Import Backup
     const importInput = document.getElementById('importFileInput');
-    document.querySelector('.backup-card label')?.addEventListener('click', () => importInput.click());
+    const importLabel = document.querySelector('.backup-card label');
+    if (importLabel) {
+        importLabel.addEventListener('click', () => importInput.click());
+    }
     importInput?.addEventListener('change', e => {
         if (e.target.files[0]) importAllData(e.target.files[0]);
     });
@@ -449,61 +557,7 @@ function init() {
 
 window.onload = init;
 
-// ==================== HORÁRIOS DOS MERCADOS - DINÂMICO EM TEMPO REAL ====================
-const marketsData = [
-    {
-        name: "B3 - Brasil",
-        flag: "🇧🇷",
-        openHour: 10,      // 10:00
-        closeHour: 17.9167, // 17:55
-        hours: "10:00 - 17:55"
-    },
-    {
-        name: "NYSE - Nova York",
-        flag: "🇺🇸",
-        openHour: 10.5,    // 10:30
-        closeHour: 17,
-        hours: "10:30 - 17:00"
-    },
-    {
-        name: "NASDAQ",
-        flag: "🇺🇸",
-        openHour: 10.5,
-        closeHour: 17,
-        hours: "10:30 - 17:00"
-    },
-    {
-        name: "Londres - FTSE",
-        flag: "🇬🇧",
-        openHour: 5,
-        closeHour: 13.5,   // 13:30
-        hours: "05:00 - 13:30"
-    },
-    {
-        name: "Xetra - Alemanha",
-        flag: "🇩🇪",
-        openHour: 4,
-        closeHour: 12.5,   // 12:30
-        hours: "04:00 - 12:30"
-    },
-    {
-        name: "Tóquio",
-        flag: "🇯🇵",
-        openHour: 21,
-        closeHour: 6,      // 06:00 (dia seguinte)
-        hours: "21:00 - 06:00",
-        overnight: true
-    }
-];
-
-function getCurrentHourDecimal() {
-    const now = new Date();
-    // Ajuste para GMT-3 (horário oficial do Brasil)
-    const utc = now.getUTCHours() + (now.getUTCMinutes() / 60);
-    return (utc - 3 + 24) % 24; // converte para GMT-3
-}
-
-// ==================== HORÁRIOS DOS MERCADOS - ESTILO MAPA MUNDI ====================
+// ==================== HORÁRIOS DOS MERCADOS ====================
 const marketsData = [
     { name: "Sydney",       flag: "🇦🇺", color: "#10b981", open: 17, close: 1,   hours: "17:00 - 01:00" },
     { name: "Tóquio",       flag: "🇯🇵", color: "#ef4444", open: 21, close: 6,   hours: "21:00 - 06:00" },
@@ -525,8 +579,6 @@ function renderMarketsTimeline() {
 
     const currentHour = getCurrentHourGMT3();
     let html = `<div class="timeline-axis">`;
-    
-    // Eixo de tempo
     for (let i = 0; i <= 24; i++) {
         html += `<span>${i.toString().padStart(2, '0')}</span>`;
     }
@@ -538,7 +590,7 @@ function renderMarketsTimeline() {
 
         const barLeft = (market.open / 24) * 100;
         let barWidth = ((market.close - market.open) / 24) * 100;
-        if (barWidth < 0) barWidth += 100; // para mercados que cruzam meia-noite
+        if (barWidth < 0) barWidth += 100;
 
         const currentPosition = (currentHour / 24) * 100;
 
@@ -566,5 +618,5 @@ function renderMarketsTimeline() {
 
 function startMarketsUpdater() {
     renderMarketsTimeline();
-    setInterval(renderMarketsTimeline, 60000); // atualiza a cada 1 minuto
+    setInterval(renderMarketsTimeline, 60000);
 }
