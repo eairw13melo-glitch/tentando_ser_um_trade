@@ -447,3 +447,113 @@ function init() {
 }
 
 window.onload = init;
+
+// ==================== HORÁRIOS DOS MERCADOS - DINÂMICO EM TEMPO REAL ====================
+const marketsData = [
+    {
+        name: "B3 - Brasil",
+        flag: "🇧🇷",
+        openHour: 10,      // 10:00
+        closeHour: 17.9167, // 17:55
+        hours: "10:00 - 17:55"
+    },
+    {
+        name: "NYSE - Nova York",
+        flag: "🇺🇸",
+        openHour: 10.5,    // 10:30
+        closeHour: 17,
+        hours: "10:30 - 17:00"
+    },
+    {
+        name: "NASDAQ",
+        flag: "🇺🇸",
+        openHour: 10.5,
+        closeHour: 17,
+        hours: "10:30 - 17:00"
+    },
+    {
+        name: "Londres - FTSE",
+        flag: "🇬🇧",
+        openHour: 5,
+        closeHour: 13.5,   // 13:30
+        hours: "05:00 - 13:30"
+    },
+    {
+        name: "Xetra - Alemanha",
+        flag: "🇩🇪",
+        openHour: 4,
+        closeHour: 12.5,   // 12:30
+        hours: "04:00 - 12:30"
+    },
+    {
+        name: "Tóquio",
+        flag: "🇯🇵",
+        openHour: 21,
+        closeHour: 6,      // 06:00 (dia seguinte)
+        hours: "21:00 - 06:00",
+        overnight: true
+    }
+];
+
+function getCurrentHourDecimal() {
+    const now = new Date();
+    // Ajuste para GMT-3 (horário oficial do Brasil)
+    const utc = now.getUTCHours() + (now.getUTCMinutes() / 60);
+    return (utc - 3 + 24) % 24; // converte para GMT-3
+}
+
+function renderMarketsTimeline() {
+    const container = document.getElementById('marketsTimeline');
+    if (!container) return;
+
+    const currentHour = getCurrentHourDecimal();
+    let html = `<div class="market-timeline-live">`;
+
+    marketsData.forEach(market => {
+        let isOpen = false;
+        let progress = 0;
+
+        if (market.overnight) {
+            // Mercado que cruza a meia-noite (ex: Tóquio)
+            isOpen = currentHour >= market.openHour || currentHour < market.closeHour;
+        } else {
+            isOpen = currentHour >= market.openHour && currentHour < market.closeHour;
+        }
+
+        if (isOpen) {
+            const sessionLength = market.closeHour - market.openHour;
+            const elapsed = currentHour - market.openHour;
+            progress = Math.min(Math.max((elapsed / sessionLength) * 100, 0), 100);
+        }
+
+        const statusClass = isOpen ? 'live-open' : 'live-closed';
+        const statusText = isOpen ? 'ABERTO AGORA' : 'Fechado';
+
+        html += `
+        <div class="market-row-live">
+            <div class="market-info">
+                <span class="flag">${market.flag}</span>
+                <strong>${market.name}</strong>
+            </div>
+            <div class="market-status">
+                <span class="live-dot ${statusClass}"></span>
+                <span class="status-text">${statusText}</span>
+            </div>
+            <div class="bar-container-live">
+                <div class="bar-live ${isOpen ? 'bar-open' : ''}" style="width: ${progress}%"></div>
+            </div>
+            <div class="market-hours-live">${market.hours}</div>
+        </div>`;
+    });
+
+    html += `</div>`;
+    container.innerHTML = html;
+}
+
+// Atualiza a cada 60 segundos
+let marketInterval;
+function startMarketsUpdater() {
+    renderMarketsTimeline();
+    if (marketInterval) clearInterval(marketInterval);
+    marketInterval = setInterval(renderMarketsTimeline, 60000);
+}
