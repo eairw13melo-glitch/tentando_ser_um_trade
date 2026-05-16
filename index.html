@@ -242,28 +242,22 @@
             <!-- COLUNA 3: MERCADOS E PERFORMANCE (LATERAL) -->
             <section class="sidebar-column">
 
-            <!-- Horários dos Mercados - Estilo Mapa Mundi -->
+            <!-- Horários dos Mercados - RELÓGIO CIRCULAR -->
             <div class="card" id="marketsCard">
                 <div class="card-header">
                     <h3>🌍 Horários dos Mercados (GMT-3)</h3>
+                    <button id="refreshMarketsBtn" class="small-btn">🔄 Atualizar</button>
                 </div>
-                <div class="card-body markets-map">
-                    <div id="marketsTimeline" class="timeline-container"></div>
+                <div class="card-body markets-clock-container">
+                    <div class="market-clock" id="marketClock">
+                        <!-- Gerado via JavaScript -->
+                    </div>
+                    <div class="clock-legend">
+                        <div class="legend-item"><span class="dot open"></span> Aberto Agora</div>
+                        <div class="legend-item"><span class="dot closed"></span> Fechado</div>
+                    </div>
                 </div>
             </div>
-
-                <!-- Ações do Mini Índice -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3>📊 Mini Índice - Principais Ativos</h3>
-                        <button id="refreshStocksBtn" class="small-btn">🔄 Atualizar</button>
-                    </div>
-                    <div class="card-body">
-                        <div class="stocks-grid" id="stocksGrid">
-                            <div class="loading">Carregando cotações...</div>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- Gráfico de Performance -->
                 <div class="card">
