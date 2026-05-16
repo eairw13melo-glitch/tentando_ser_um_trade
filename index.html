@@ -3,14 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <meta name="description" content="Diário do Trader Consistente - Checklist psicológico + Diário de Trades + Gestão de Risco">
-    <meta name="theme-color" content="#1e3a8a">
-    <title>Diário do Trader Consistente | Disciplina em Ação</title>
-    
+    <meta name="description" content="Diário do Trader Consistente - Checklist + Trades + Performance">
+    <title>Diário do Trader Consistente</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    
-    <!-- Chart.js carregado no final do body -->
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -31,19 +28,19 @@
             <div class="patrimonio-card">
                 <span>💰 Patrimônio Atual</span>
                 <strong id="patrimonioValor">R$ 0,00</strong>
-                <button id="editarPatrimonioBtn" class="small-btn" aria-label="Editar patrimônio">Editar</button>
+                <button id="editarPatrimonioBtn" class="small-btn">Editar</button>
             </div>
 
             <div class="stop-card">
                 <span>⛔ Stops Hoje</span>
-                <strong id="stopCounterDisplay">0 / 2</strong>
-                <button id="addStopBtn" class="small-btn" aria-label="Adicionar stop">+ Stop</button>
-                <button id="resetStopsBtn" class="small-btn" aria-label="Resetar stops">Reset</button>
+                <strong id="stopCounterDisplay">0</strong>
+                <button id="addStopBtn" class="small-btn">+ Stop</button>
+                <button id="resetStopsBtn" class="small-btn">Reset</button>
             </div>
 
             <div class="backup-card">
-                <button id="exportAllBtn" class="small-btn backup-btn" aria-label="Exportar backup">📤 Backup</button>
-                <label for="importFileInput" class="small-btn import-btn" aria-label="Importar backup">📥 Importar</label>
+                <button id="exportAllBtn" class="small-btn backup-btn">📤 Exportar Backup</button>
+                <label for="importFileInput" class="small-btn import-btn">📥 Importar Backup</label>
                 <input type="file" id="importFileInput" accept=".json" style="display:none;">
             </div>
         </div>
@@ -51,45 +48,271 @@
         <div class="main-grid">
 
             <!-- COLUNA 1: CHECKLISTS -->
-            <section class="checklists-column" aria-labelledby="checklist-title">
-                <h2 id="checklist-title" class="section-title">✅ Checklist de Disciplina</h2>
+            <section class="checklists-column">
+                <h2 class="section-title">✅ Checklist de Disciplina</h2>
                 <div class="checklists-accordion" id="checklistsAccordion">
-                    <!-- Os 5 accordions permanecem iguais (mantive o conteúdo) -->
-                    <!-- ... (mantive todo o conteúdo dos 5 checklists igual) ... -->
+                    <!-- Checklist 1 -->
+                    <div class="accordion-item">
+                        <div class="accordion-header" data-target="checklist1">
+                            <h3>🧠 1. Mental & Pré-Abertura</h3>
+                            <span class="accordion-icon">▼</span>
+                        </div>
+                        <div class="accordion-body" id="checklist1">
+                            <div class="checklist-grid">
+                                <label class="checklist-item"><input type="checkbox" id="mental_estavel"> Estado emocional estável</label>
+                                <label class="checklist-item"><input type="checkbox" id="mental_sleep"> Dormi bem, alimentado</label>
+                                <label class="checklist-item"><input type="checkbox" id="afirmacao"> Afirmações positivas</label>
+                                <label class="checklist-item"><input type="checkbox" id="respira_pre"> Respiração 4-4-6</label>
+                                <label class="checklist-item"><input type="checkbox" id="macro_global"> Cenário macro</label>
+                                <label class="checklist-item"><input type="checkbox" id="analise_tecnica"> Análise técnica</label>
+                                <label class="checklist-item"><input type="checkbox" id="setup_definido"> Setup definido (R:R ≥ 1:2)</label>
+                                <label class="checklist-item"><input type="checkbox" id="plano_contingencia"> Plano de contingência</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Checklist 2 -->
+                    <div class="accordion-item">
+                        <div class="accordion-header" data-target="checklist2">
+                            <h3>🛡️ 2. Gestão de Risco</h3>
+                            <span class="accordion-icon">▼</span>
+                        </div>
+                        <div class="accordion-body" id="checklist2">
+                            <div class="checklist-grid">
+                                <label class="checklist-item"><input type="checkbox" id="risk_por_trade"> Risco 1-2% por trade</label>
+                                <label class="checklist-item"><input type="checkbox" id="daily_stop_cap"> Perda máxima diária</label>
+                                <label class="checklist-item"><input type="checkbox" id="max_trades_day"> Limite de trades/dia</label>
+                                <label class="checklist-item"><input type="checkbox" id="stop_loss_fixo"> Stop sempre pendente</label>
+                                <label class="checklist-item"><input type="checkbox" id="alvo_parcial"> Alvo parcial e trailing</label>
+                                <label class="checklist-item"><input type="checkbox" id="respeitar_limite_stop"> 2 stops = fim do dia</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Checklist 3 -->
+                    <div class="accordion-item">
+                        <div class="accordion-header" data-target="checklist3">
+                            <h3>⏱️ 3. Durante o Pregão</h3>
+                            <span class="accordion-icon">▼</span>
+                        </div>
+                        <div class="accordion-body" id="checklist3">
+                            <div class="checklist-grid">
+                                <label class="checklist-item"><input type="checkbox" id="esperar_oportunidade"> Esperar oportunidade</label>
+                                <label class="checklist-item"><input type="checkbox" id="seguir_estrategia"> Seguir estratégia</label>
+                                <label class="checklist-item"><input type="checkbox" id="aceitar_perdas"> Aceitar perdas</label>
+                                <label class="checklist-item"><input type="checkbox" id="leitura_anti_impulso"> Leitura anti-impulso</label>
+                                <label class="checklist-item"><input type="checkbox" id="respira_antes_clique"> Respiração pré-clique</label>
+                                <label class="checklist-item"><input type="checkbox" id="check_emocional_entrada"> Check: aceito o stop?</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Checklist 4 -->
+                    <div class="accordion-item">
+                        <div class="accordion-header" data-target="checklist4">
+                            <h3>📝 4. Pós-Mercado</h3>
+                            <span class="accordion-icon">▼</span>
+                        </div>
+                        <div class="accordion-body" id="checklist4">
+                            <div class="checklist-grid">
+                                <label class="checklist-item"><input type="checkbox" id="registrar_trades"> Registrar trades</label>
+                                <label class="checklist-item"><input type="checkbox" id="revisar_plano"> Revisar execução</label>
+                                <label class="checklist-item"><input type="checkbox" id="diario_emocional"> Diário emocional</label>
+                                <label class="checklist-item"><input type="checkbox" id="ritual_encerramento"> Ritual de encerramento</label>
+                                <label class="checklist-item"><input type="checkbox" id="reflexao_noite"> Reflexão noite</label>
+                                <label class="checklist-item"><input type="checkbox" id="ajustar_estrategia"> Ajustar estratégias</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Checklist 5 -->
+                    <div class="accordion-item">
+                        <div class="accordion-header" data-target="checklist5">
+                            <h3>🥇 5. Regras de Ouro</h3>
+                            <span class="accordion-icon">▼</span>
+                        </div>
+                        <div class="accordion-body" id="checklist5">
+                            <div class="checklist-grid">
+                                <label class="checklist-item"><input type="checkbox" id="nunca_vinganca"> Nunca revenge trade</label>
+                                <label class="checklist-item"><input type="checkbox" id="nunca_averagedown"> Nunca average down</label>
+                                <label class="checklist-item"><input type="checkbox" id="sem_operar_abalado"> Não operar abalado</label>
+                                <label class="checklist-item"><input type="checkbox" id="sair_meta_stop"> Sair na meta/stop</label>
+                                <label class="checklist-item"><input type="checkbox" id="consistencia_mensal"> Consistência > ganhos</label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <!-- COLUNA 2: DIÁRIO (CENTRO) -->
-            <section class="diary-column" aria-labelledby="diary-title">
-                <h2 id="diary-title" class="section-title">📔 Diário de Trades</h2>
-                
-                <!-- Formulário e Lista permanecem quase iguais -->
-                <!-- Mantive o form-grid e trade-list -->
+            <!-- COLUNA 2: DIÁRIO DE TRADES (CENTRO) -->
+            <section class="diary-column">
+                <div class="diary-section">
+                    <h2 class="section-title">📔 Diário de Trades</h2>
+                    
+                    <!-- Formulário de Trade -->
+                    <div class="diary-form card">
+                        <div class="card-body">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Data</label>
+                                    <input type="date" id="tradeDate">
+                                </div>
+                                <div class="form-group">
+                                    <label>Ativo</label>
+                                    <div class="asset-input-group">
+                                        <input list="ativosList" id="asset" placeholder="Ex: WINJ26">
+                                        <datalist id="ativosList"></datalist>
+                                        <button id="addAssetBtn" class="small-btn" title="Adicionar ativo">➕</button>
+                                        <button id="removeAssetBtn" class="small-btn" title="Remover ativo">✖</button>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Tipo</label>
+                                    <select id="tradeType">
+                                        <option value="Compra">Compra</option>
+                                        <option value="Venda">Venda</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Entrada</label>
+                                    <input type="number" step="any" id="entryPrice" placeholder="R$">
+                                </div>
+                                <div class="form-group">
+                                    <label>Saída</label>
+                                    <input type="number" step="any" id="exitPrice" placeholder="R$">
+                                </div>
+                                <div class="form-group">
+                                    <label>Stop Loss</label>
+                                    <input type="number" step="any" id="stopLoss" placeholder="R$">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Take Profit</label>
+                                    <input type="number" step="any" id="takeProfit" placeholder="R$">
+                                </div>
+                                <div class="form-group">
+                                    <label>Risco (%)</label>
+                                    <input type="number" step="0.1" id="riskPercent" placeholder="1.0">
+                                </div>
+                                <div class="form-group">
+                                    <label>Resultado (R$)</label>
+                                    <input type="text" id="pnl" readonly class="result-input">
+                                </div>
+
+                                <div class="form-group full">
+                                    <label>Estratégia</label>
+                                    <input type="text" id="strategy" placeholder="Ex: Scalp, Breakout...">
+                                </div>
+                                <div class="form-group full">
+                                    <label>Gestão de Risco</label>
+                                    <select id="riskRule">
+                                        <option value="Sim">Sim</option>
+                                        <option value="Não">Não</option>
+                                        <option value="Parcial">Parcial</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group full">
+                                    <label>Observações / Emoções</label>
+                                    <textarea id="notes" rows="3" placeholder="Como você se sentiu? O que aprendeu?"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button id="addTradeBtn" class="btn-primary">➕ Adicionar Trade</button>
+                                <button id="clearFormBtn" class="btn-secondary">Limpar Formulário</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Trades -->
+                    <div class="trade-list card">
+                        <div class="card-header">
+                            <h3>📋 Histórico de Trades</h3>
+                            <button id="exportTradesBtn" class="small-btn">📎 Exportar CSV</button>
+                        </div>
+                        <div class="card-body" id="tradesContainer">
+                            <div class="empty-message">Nenhum trade registrado hoje.</div>
+                        </div>
+                    </div>
+                </div>
             </section>
 
-            <!-- COLUNA 3: SIDEBAR -->
-            <aside class="sidebar-column" aria-labelledby="sidebar-title">
-                <h2 id="sidebar-title" class="visually-hidden">Informações do Mercado</h2>
-                
-                <!-- Cards laterais (mantidos, mas com melhor semântica) -->
-            </aside>
+            <!-- COLUNA 3: MERCADOS E PERFORMANCE (LATERAL) -->
+            <section class="sidebar-column">
+
+            <!-- Horários dos Mercados - Estilo Mapa Mundi -->
+            <div class="card" id="marketsCard">
+                <div class="card-header">
+                    <h3>🌍 Horários dos Mercados (GMT-3)</h3>
+                </div>
+                <div class="card-body markets-map">
+                    <div id="marketsTimeline" class="timeline-container"></div>
+                </div>
+            </div>
+
+                <!-- Ações do Mini Índice -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📊 Mini Índice - Principais Ativos</h3>
+                        <button id="refreshStocksBtn" class="small-btn">🔄 Atualizar</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="stocks-grid" id="stocksGrid">
+                            <div class="loading">Carregando cotações...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráfico de Performance -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📈 Evolução do Patrimônio</h3>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="performanceChart" height="280"></canvas>
+                    </div>
+                </div>
+
+                <!-- Calendário Econômico -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📅 Calendário Econômico</h3>
+                    </div>
+                    <div class="card-body" id="economicCalendar">
+                        <!-- JS preenche -->
+                    </div>
+                </div>
+
+                <!-- Notícias -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📰 Notícias Rápidas</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul class="news-links" id="newsLinks">
+                            <!-- mantido igual -->
+                        </ul>
+                    </div>
+                </div>
+
+            </section>
         </div>
 
-        <!-- RESET -->
+        <!-- BOTÃO DE RESET -->
         <div class="reset-container">
-            <button id="fullResetDay" class="btn-fullreset" aria-label="Resetar checklists e stops do dia">
-                🔄 Reset Checklists + Stops (mantém trades)
+            <button id="fullResetDay" class="btn-fullreset">
+                🔄 Reset Checklists + Stops (mantém trades e patrimônio)
             </button>
         </div>
 
         <footer>
-            <p>Todos os dados são salvos automaticamente no seu navegador.</p>
-            <p>Use os botões de Backup para exportar/importar.</p>
+            Todos os dados são salvos automaticamente no navegador.<br>
+            Use os botões de Backup para exportar/importar.
         </footer>
     </div>
 
-    <!-- Chart.js carregado aqui -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
